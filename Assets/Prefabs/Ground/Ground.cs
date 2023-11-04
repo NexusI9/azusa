@@ -56,9 +56,10 @@ public class Ground : MonoBehaviour
         Debug.DrawLine(getWorldPosition(x, y), getWorldPosition(x, y + 1), Color.white, 100f);
     }
 
-    private void drawTile(int x, int y, GameObject tile)
+    private GameObject drawTile(int x, int y, GameObject tile)
     {
-        Instantiate(tile, getWorldPosition(x,y), Quaternion.identity);
+        GameObject tileInstance = Instantiate(tile, getWorldPosition(x, y), Quaternion.identity) as GameObject;
+        return tileInstance;
     }
 
 }
