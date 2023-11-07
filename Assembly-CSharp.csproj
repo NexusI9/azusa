@@ -60,11 +60,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Prefabs/Camera/Scripts/FreeFlyCamera.cs" />
-    <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObjectRaycaster.cs" />
     <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObject.cs" />
     <Compile Include="Assets/Prefabs/Testing/AddGridObject.cs" />
     <Compile Include="Assets/Scripts/Manager.cs" />
-    <Compile Include="Assets/Prefabs/Tile/Scripts/TileRaycaster.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Raycaster.cs" />
     <Compile Include="Assets/Prefabs/Tile/Scripts/Tile.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Cursor.cs" />

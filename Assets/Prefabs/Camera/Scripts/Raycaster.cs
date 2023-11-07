@@ -5,7 +5,23 @@ using UnityEngine;
 public class Raycaster : MonoBehaviour
 {
 
-    protected virtual void Update()
+    public static Raycaster Instance { get; private set; }
+
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Optional, if you want the Raycaster to persist between scenes.
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public static GameObject GetHitObject()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -14,55 +30,19 @@ public class Raycaster : MonoBehaviour
         {
             GameObject hitObject = hit.collider.gameObject;
 
-            //Hover event
-            if (hitObject)
-            {
-                OnCursorEnter(hitObject);
-
-                //Click event
-                if (Input.GetMouseButtonDown(0))
-                {
-            
-                    OnCursorDown(hitObject);
-                }
-
-                if (Input.GetMouseButtonUp(0))
-                {
-                    OnCursorUp(hitObject);
-                }
-            }
-            else
-            {
-                OnCursorLeave(hitObject);
-            }
+            //Return hitObject
+            return hitObject;
 
         }
 
+        return null;
+
     }
 
-    protected virtual void OnCursorEnter(GameObject hitObject)
+    private void SendMessageTo(GameObject target, string message)
     {
-        
-    }
-
-    protected virtual void OnCursorLeave(GameObject hitObject)
-    {
+        target.SendMessage(message, SendMessageOptions.DontRequireReceiver);
 
     }
 
-    protected virtual void OnCursorDown(GameObject hitObject)
-    {
-
-    }
-
-    protected virtual void OnCursorUp(GameObject hitObject)
-    {
-
-    }
-
-    protected bool IsTargeted(GameObject gameObject, GameObject hitObject)
-    {
-        return GameObject.ReferenceEquals(gameObject, hitObject);
-
-    }
 }

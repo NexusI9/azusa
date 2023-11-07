@@ -16,20 +16,13 @@ public class GridObject : GridMaster
         if (!child) { return; }
 
         child = this.InstanceChild(child);
-        this.AddChildScript(child);
 
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (active == true)
-        {
-
-            MoveTo(lastTilePosition);
-        }
-
-
+        HandleRaycaster();
     }
 
     private GameObject InstanceChild(GameObject child)
@@ -48,16 +41,74 @@ public class GridObject : GridMaster
         return newChild;
     }
 
-    private void AddChildScript(GameObject child)
-    {
-        child.AddComponent<GridObjectRaycaster>(); 
-    }
 
-    private void MoveTo(Vector3 newPosition)
+    private void HandleMovement(Vector3 newPosition)
     {
-        Debug.Log(lastTilePosition);
-        if (newPosition == null) { return; }
+        if (newPosition == null || active == false) { return; }
         // Move the GameObject to the rounded grid position with a specified speed
         transform.position = newPosition; 
     }
+
+    private void OnMouseDown()
+    {
+        Debug.Log("mouseDown");
+        //activate selected object
+        this.active = true;
+    }
+
+    private void OnMouseUp()
+    {
+        //deactivate selected objet
+        this.active = false;
+    }
+
+    private void HandleRaycaster()
+    {
+
+        GameObject hitObject = Raycaster.GetHitObject();
+        if (hitObject != null)
+        {
+            if (hitObject.transform.IsChildOf(transform))
+            {
+                // The click happened on a child GameObject
+                HandleChildClick(hitObject);
+            }
+            else
+            {
+                // The click happened on the parent GameObject
+                HandleParentClick();
+            }
+        }
+    }
+
+    private void HandleChildClick(GameObject child)
+    {
+
+    }
+
+    private void HandleParentClick()
+    {
+        HandleMovement(lastTilePosition);
+    }
+
+    private void AdjustColliderSize()
+    {
+        // Get all child colliders
+        Collider[] childColliders = GetComponentsInChildren<Collider>();
+
+        // Initialize parent collider size
+        Bounds parentBounds = new Bounds(transform.position, Vector3.zero);
+
+        // Calculate bounds of all child colliders
+        foreach (Collider childCollider in childColliders)
+        {
+            parentBounds.Encapsulate(childCollider.bounds);
+        }
+
+        // Update the parent collider size
+        BoxCollider parentCollider = GetComponent<BoxCollider>();
+        parentCollider.center = parentBounds.center - transform.position;
+        parentCollider.size = parentBounds.size;
+    }
+
 }
