@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AddGridObject : GridObject
+public class ObjectSpawner : MonoBehaviour
 {
+
+    public event System.Action<GameObject> OnKeyPressed;
 
     public GameObject instance;
     
@@ -17,10 +19,11 @@ public class AddGridObject : GridObject
     void Update()
     {
 
-        if (Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.P))
         {
-           Instantiate(instance);
+            OnKeyPressed?.Invoke(instance);
         }
         
     }
+    
 }

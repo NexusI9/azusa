@@ -2,15 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridObject : GridMaster
+public class GridObject : MonoBehaviour
 {
 
-    public bool locked = false;
-    public bool active = false;
+    //Events
+    public event System.Action<GridObject> MouseUp;
+    public event System.Action<GridObject> OnSelected;
+
+    //Parameters
     public GameObject child;
+    public int stackable = 0;
+    public int _zLength = 1;
+    public int _xLength = 1;
+
+    [HideInInspector]
+    public bool locked = false;
+    [HideInInspector]
+    public bool active = false;
 
 
-    // Start is called before the first frame update
     private void Start()
     {
         if (!child) { return; }
@@ -19,7 +29,7 @@ public class GridObject : GridMaster
 
     }
 
-    // Update is called once per frame
+
     private void Update()
     {
         HandleRaycaster();
@@ -36,22 +46,20 @@ public class GridObject : GridMaster
         newChild.transform.parent = gameObject.transform;
 
         // Optionally, you can adjust the position and rotation of the new child
-        newChild.transform.localPosition = Vector3.zero;
+        //newChild.transform.localPosition = Vector3.zero;
         newChild.transform.localRotation = Quaternion.identity;
         return newChild;
     }
 
 
-    private void HandleMovement(Vector3 newPosition)
+    public void MoveTo(Vector3 newPosition)
     {
-        if (newPosition == null || active == false) { return; }
         // Move the GameObject to the rounded grid position with a specified speed
         transform.position = newPosition; 
     }
 
     private void OnMouseDown()
     {
-        Debug.Log("mouseDown");
         //activate selected object
         this.active = true;
     }
@@ -60,9 +68,12 @@ public class GridObject : GridMaster
     {
         //deactivate selected objet
         this.active = false;
+        //send message to lock tile
+        MouseUp?.Invoke(this);
+        //LockTileAt(transform.position, _xLength, _zLength);
     }
 
-    private void HandleRaycaster()
+    private void HandleRaycaster() 
     {
 
         GameObject hitObject = Raycaster.GetHitObject();
@@ -88,7 +99,7 @@ public class GridObject : GridMaster
 
     private void HandleParentClick()
     {
-        HandleMovement(lastTilePosition);
+        active = true;
     }
 
     private void AdjustColliderSize()
