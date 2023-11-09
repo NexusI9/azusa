@@ -13,47 +13,47 @@ public class Tile : MonoBehaviour
 
     //Private
     private Material material;
+    private Color defaultTileColor;
 
     private void Start()
     {
         //Instiantiate new material from existing one
-        this.material = new Material(GetComponent<Renderer>().material);
+        material = new Material(GetComponent<Renderer>().material);
 
         //Assign new instance to gameObject
-        gameObject.GetComponent<Renderer>().material = this.material;
+        gameObject.GetComponent<Renderer>().material = material;
+        defaultTileColor = material.GetColor("_TileColor");
     }
 
     private void Update()
     {
         //UpdateStrokeWidth();
-        HandleLockState();
     }
 
 
-    private void HandleLockState()
+    public void HandleLockState(bool locked)
     {
-
         if (locked)
         {
-            this.material.SetColor("_TileColor", Color.red);
+            material.SetColor("_TileColor", Color.red);
         }
         else
         {
-
+            material.SetColor("_TileColor", defaultTileColor);
         }
     }
 
 
     private void OnMouseEnter()
     {
-        this.material.SetInt("_Glow", 1);
+        material.SetInt("_Glow", 1);
         //Update LastTilePosition in Grid
         TileHover?.Invoke(this);
     }
 
     private void OnMouseExit()
     {
-        this.material.SetInt("_Glow", 0);
+        material.SetInt("_Glow", 0);
     }
 
     private void UpdateStrokeWidth()
@@ -73,7 +73,7 @@ public class Tile : MonoBehaviour
 
         Debug.Log(newStrokeWidth);
         // Update the shader property in the material
-        this.material.SetFloat("_StrokeWidth", newStrokeWidth);
+        material.SetFloat("_StrokeWidth", newStrokeWidth);
     }
 
 }

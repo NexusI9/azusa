@@ -32,7 +32,10 @@ public class GridObject : MonoBehaviour
 
     private void Update()
     {
-        HandleRaycaster();
+        if (active)
+        {
+
+        }
     }
 
     private GameObject InstanceChild(GameObject child)
@@ -62,15 +65,14 @@ public class GridObject : MonoBehaviour
     {
         //activate selected object
         this.active = true;
+        OnSelected.Invoke(this);
     }
 
     private void OnMouseUp()
     {
         //deactivate selected objet
         this.active = false;
-        //send message to lock tile
         MouseUp?.Invoke(this);
-        //LockTileAt(transform.position, _xLength, _zLength);
     }
 
     private void HandleRaycaster() 
@@ -84,22 +86,11 @@ public class GridObject : MonoBehaviour
                 // The click happened on a child GameObject
                 HandleChildClick(hitObject);
             }
-            else
-            {
-                // The click happened on the parent GameObject
-                HandleParentClick();
-            }
         }
     }
 
     private void HandleChildClick(GameObject child)
     {
-
-    }
-
-    private void HandleParentClick()
-    {
-        active = true;
     }
 
     private void AdjustColliderSize()
