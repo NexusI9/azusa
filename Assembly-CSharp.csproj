@@ -66,6 +66,7 @@
     <Compile Include="Assets/Prefabs/Camera/Scripts/Raycaster.cs" />
     <Compile Include="Assets/Prefabs/Tile/Scripts/Tile.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Cursor.cs" />
+    <Compile Include="Assets/Prefabs/GridMaster/Scripts/GridMasterHelper.cs" />
     <Compile Include="Assets/Prefabs/GridMaster/Scripts/ObjectSpawner.cs" />
     <Compile Include="Assets/Prefabs/Cursor/CursorController.cs" />
   </ItemGroup>

@@ -46,9 +46,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   child: {fileID: 3026407979446386339, guid: 4c2b1b4580ccc41989d426930eaef4f2, type: 3}
-  stackable: 0
-  _zLength: 1
-  _xLength: 1
+  _zSize: 1
+  _ySize: 1
+  _xSize: 1
+  _stackType: 0
+  _maxStack: 4
+  ID: 0
   locked: 0
   active: 0
 --- !u!65 &2406032236555704554
@@ -70,5 +73,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0, y: 0, z: 0}
   m_Center: {x: 0, y: 0, z: 0}

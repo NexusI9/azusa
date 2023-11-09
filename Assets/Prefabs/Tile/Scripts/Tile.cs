@@ -43,17 +43,29 @@ public class Tile : MonoBehaviour
         }
     }
 
+    public void SetGlow(bool glow)
+    {
+        if (glow)
+        {
+            material.SetInt("_Glow", 1);
+        }
+        else
+        {
+            material.SetInt("_Glow", 0);
+        }
+    }
+
 
     private void OnMouseEnter()
     {
-        material.SetInt("_Glow", 1);
+        SetGlow(true);
         //Update LastTilePosition in Grid
         TileHover?.Invoke(this);
     }
 
     private void OnMouseExit()
     {
-        material.SetInt("_Glow", 0);
+        SetGlow(false);
     }
 
     private void UpdateStrokeWidth()

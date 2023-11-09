@@ -138,7 +138,7 @@ PrefabInstance:
     - target: {fileID: 9299887658224329, guid: 29a96f92bdb5a4c38b6de5fdeb3830f7, type: 3}
       propertyPath: _spawn
       value: 
-      objectReference: {fileID: 3026407979446386339, guid: 4c2b1b4580ccc41989d426930eaef4f2, type: 3}
+      objectReference: {fileID: 2444359134047796655, guid: 6d70efb943ade46028998bbd061244a0, type: 3}
     - target: {fileID: 9299887658224329, guid: 29a96f92bdb5a4c38b6de5fdeb3830f7, type: 3}
       propertyPath: _width
       value: 10
