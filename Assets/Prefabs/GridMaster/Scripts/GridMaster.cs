@@ -159,7 +159,7 @@ public class GridMaster : MonoBehaviour
                 newPosition.z += zSize / (2f*zSize);
             }
 
-           lastActiveObject?.MoveTo(newPosition);
+           lastActiveObject?.MoveToTile(newPosition);
 
             //2. Check for hovered tiles to make them glow
             foreach(GameObject tl in tiles)

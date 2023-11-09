@@ -66,12 +66,15 @@ public class GridObject : MonoBehaviour
 
 
     
-    public void MoveTo(Vector3 newPosition)
+    public void MoveToTile(Vector3 newPosition)
     {
         // Move the GameObject to the rounded tile position with a specified speed
         // Since origin middle of object, need alterate the object Y (up) position so it doesn't goes in ground
         newPosition.y = _ySize / 2f;
         transform.position = newPosition;
+
+        //if Object was stacked, remove from stack base array
+        stackBase?.RemoveStack(this);
         stackBase = null;
     }
 
@@ -101,6 +104,11 @@ public class GridObject : MonoBehaviour
 
     private void OnMouseDown()
     {
+        //if object is not last stack object => return
+        if (stackBase && stackBase.GetLastStackObject() != this )
+        {
+            return;
+        }
         //activate selected object
         this.active = true;
         OnSelected.Invoke(this);
@@ -113,21 +121,30 @@ public class GridObject : MonoBehaviour
         MouseUp?.Invoke(this);
 
         //If stacked => Update stack base array
-        if (stackBase != null)
-        {
-            stackBase.AddStack(this);
-        }
+        stackBase?.AddStack(this);
     }
 
     public void AddStack(GridObject gridObject)
     {
         stackArray.Add(gridObject);
-        Debug.Log(stackArray);
+        Debug.Log(stackArray.Count);
+    }
+
+    public void RemoveStack(GridObject gridObject)
+    {
+        stackArray.Remove(gridObject);
+        Debug.Log(stackArray.Count);
+    }
+
+    public GridObject GetLastStackObject()
+    {
+        return stackArray[stackArray.Count-1];
     }
 
 
     private void SetColliderSize()
     {
+        //Adjust collider size from public parameters
         BoxCollider collider = gameObject.GetComponent<BoxCollider>();
         collider.size = new Vector3(_xSize, _ySize, _zSize);
     }
