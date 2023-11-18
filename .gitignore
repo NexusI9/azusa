@@ -4,3 +4,12 @@
 /ProjectSettings
 /UserSettings
 /Logs
+
+*.meta
+*.log
+*.prefab
+*.cache
+*.asset
+
+#media
+*.png
