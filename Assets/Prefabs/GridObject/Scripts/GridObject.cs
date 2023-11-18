@@ -39,6 +39,7 @@ public class GridObject : MonoBehaviour
     //Private
     private List<GridObject> stackArray;
     private GridObject stackBase;
+    private int floor = 0;
 
     private void Start()
     {
@@ -104,8 +105,9 @@ public class GridObject : MonoBehaviour
 
     private void OnMouseDown()
     {
+        Debug.Log(IsTopObject());
         //if object is not last stack object => return
-        if (stackBase && stackBase.GetLastStackObject() != this )
+        if (stackBase && ( !IsTopObject() || floor == 0) )
         {
             return;
         }
@@ -120,25 +122,33 @@ public class GridObject : MonoBehaviour
         this.active = false;
         MouseUp?.Invoke(this);
 
-        //If stacked => Update stack base array
-        stackBase?.AddStack(this);
+
+        //If has stack base (is stacked) and is top object => Update stack base array
+        if (stackBase != null && IsTopObject())
+        {
+            stackBase.AddStack(this);
+            floor = stackArray.Count;
+        }
     }
 
     public void AddStack(GridObject gridObject)
     {
         stackArray.Add(gridObject);
-        Debug.Log(stackArray.Count);
+        Debug.Log("Add");
     }
 
     public void RemoveStack(GridObject gridObject)
     {
         stackArray.Remove(gridObject);
-        Debug.Log(stackArray.Count);
+        Debug.Log("Remove");
     }
 
-    public GridObject GetLastStackObject()
+    public bool IsTopObject()
     {
-        return stackArray[stackArray.Count-1];
+        //Return true if stackArray has no object yet of if has object and is last index
+        return
+            (stackArray.Count == 0) ||
+            (stackArray.Count > 0 && stackArray[stackArray.Count - 1].floor == this.floor );
     }
 
 
