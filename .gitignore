@@ -1,3 +1,4 @@
+#directory
 /Library
 /.vs
 /Temp
@@ -5,6 +6,7 @@
 /UserSettings
 /Logs
 
+#files
 *.meta
 *.log
 *.prefab
