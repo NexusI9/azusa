@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{BD953693-0695-DF1F-E5CD-3890035015A7}</ProjectGuid>
+    <ProjectGuid>{1B58137C-26F9-FABD-8AAC-F8DA1C0BFD82}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -62,7 +62,7 @@
     <Compile Include="Assets/Prefabs/Camera/Scripts/FreeFlyCamera.cs" />
     <Compile Include="Assets/Prefabs/GridMaster/Scripts/GridMaster.cs" />
     <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObject.cs" />
-    <Compile Include="Assets/Scripts/Manager.cs" />
+    <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObjectHelper.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Raycaster.cs" />
     <Compile Include="Assets/Prefabs/Tile/Scripts/Tile.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Cursor.cs" />

@@ -2,14 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum StackType 
-{
-    ADDITIVE, //simply put on top
-    EVOLUTIVE //switch instance on stack
-}
 
 public class GridObject : MonoBehaviour
 {
+
+    public enum StackType
+    {
+        ADDITIVE, //simply put on top
+        EVOLUTIVE //switch instance on stack
+    }
+
+    public enum FloorState
+    {
+        NONE,
+        BOTTOM,
+        MIDDLE,
+        TOP
+    }
 
     //Events
     public event System.Action<GridObject> MouseUp;
@@ -37,9 +46,10 @@ public class GridObject : MonoBehaviour
     public bool active = false;
 
     //Private
-    private List<GridObject> stackArray;
-    private GridObject stackBase;
-    private int floor = 0;
+    public GridObject stackBase;
+    public List<GridObject> stackArray;
+    public int floor = 0; //floor "id"
+    FloorState floorState = FloorState.BOTTOM; //flor position (Base/ middle/top)
 
     private void Start()
     {
@@ -76,11 +86,20 @@ public class GridObject : MonoBehaviour
 
         //if Object was stacked, remove from stack base array
         stackBase?.RemoveStack(this);
+        floor = 0;
         stackBase = null;
+        UpdateFloorState();
     }
 
     public void StackUp(GridObject baseObject)
     {
+
+        //Delegate base object if hovered object already has a base
+        if(baseObject.stackBase != null)
+        {
+            baseObject = baseObject.stackBase;
+        }
+
         //Called when gridobject hover another grid object instead of a tile
 
         int stackArrayLength = baseObject.stackArray.Count;
@@ -94,8 +113,23 @@ public class GridObject : MonoBehaviour
             newPosition.y = stackArrayLength + (_ySize / 2f) + baseObject._ySize;
         }
 
+        //1. Update Object Position
+
         transform.position = newPosition;
-        stackBase = baseObject;
+
+
+        //2. Update Floor State
+
+        //If is currently bottom object => Update stack base array
+        if (floorState == FloorState.BOTTOM)
+        {
+            baseObject.AddStack(this);
+            stackBase = baseObject;
+            floor = baseObject.stackArray.Count;
+            UpdateFloorState();
+        }
+
+
     }
 
     private void OnMouseEnter()
@@ -105,9 +139,9 @@ public class GridObject : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log(IsTopObject());
+
         //if object is not last stack object => return
-        if (stackBase && ( !IsTopObject() || floor == 0) )
+        if ( stackBase != null && floorState != FloorState.TOP )
         {
             return;
         }
@@ -122,13 +156,7 @@ public class GridObject : MonoBehaviour
         this.active = false;
         MouseUp?.Invoke(this);
 
-
-        //If has stack base (is stacked) and is top object => Update stack base array
-        if (stackBase != null && IsTopObject())
-        {
-            stackBase.AddStack(this);
-            floor = stackArray.Count;
-        }
+        GridObjectHelper.GetInfo(this);
     }
 
     public void AddStack(GridObject gridObject)
@@ -143,12 +171,44 @@ public class GridObject : MonoBehaviour
         Debug.Log("Remove");
     }
 
-    public bool IsTopObject()
+    public FloorState GetFloorState()
     {
-        //Return true if stackArray has no object yet of if has object and is last index
-        return
-            (stackArray.Count == 0) ||
-            (stackArray.Count > 0 && stackArray[stackArray.Count - 1].floor == this.floor );
+        return floorState;
+    }
+
+    private void UpdateFloorState()
+    {
+
+
+
+        //Case 1: if is floor 0 and don't have stack base (default, solo object) 
+        if (stackBase == null && floor == 0 ) 
+        {
+            floorState = FloorState.BOTTOM;
+            return;
+        }
+
+        //Case 2: if has base and is last index (last floor) (is floor)
+        if (stackBase != null)
+        {
+
+            foreach (GridObject stack in stackBase.stackArray)
+            {
+                if (stackBase.stackArray[^1].floor == stack.floor)
+                {
+                    stack.floorState = FloorState.TOP;
+                }
+                else
+                {
+                    stack.floorState = FloorState.MIDDLE;
+                }
+            }
+
+            return;
+        }
+
+         floorState = FloorState.NONE;
+
     }
 
 
