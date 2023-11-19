@@ -94,6 +94,7 @@ public class GridObject : MonoBehaviour
         floor = 0;
         stackBase = null;
         floorState = FloorState.BOTTOM;
+        transform.parent = null;
     }
 
     public void StackUp(GridObject baseObject)
@@ -119,17 +120,15 @@ public class GridObject : MonoBehaviour
         }
 
         //1. Update Object Position
-
-        transform.position = newPosition;
-
+        transform.localPosition = newPosition;
 
         //2. Update Floor State
-
         //If is currently bottom object => Update stack base array
         if (floorState == FloorState.BOTTOM)
         {
             baseObject.AddStack(this);
             stackBase = baseObject;
+            transform.parent = baseObject.gameObject.transform;
             floor = baseObject.stackArray.Count;
             baseObject.UpdateFloorState();
         }
