@@ -85,10 +85,15 @@ public class GridObject : MonoBehaviour
         transform.position = newPosition;
 
         //if Object was stacked, remove from stack base array
-        stackBase?.RemoveStack(this);
+        if (stackBase != null){
+            stackBase.RemoveStack(this);
+            stackBase.UpdateFloorState();
+        }
+
+        //reset to initial state
         floor = 0;
         stackBase = null;
-        UpdateFloorState();
+        floorState = FloorState.BOTTOM;
     }
 
     public void StackUp(GridObject baseObject)
@@ -126,7 +131,7 @@ public class GridObject : MonoBehaviour
             baseObject.AddStack(this);
             stackBase = baseObject;
             floor = baseObject.stackArray.Count;
-            UpdateFloorState();
+            baseObject.UpdateFloorState();
         }
 
 
@@ -179,35 +184,26 @@ public class GridObject : MonoBehaviour
     private void UpdateFloorState()
     {
 
-
-
-        //Case 1: if is floor 0 and don't have stack base (default, solo object) 
-        if (stackBase == null && floor == 0 ) 
+        //update base floor status
+        if (stackBase == null) 
         {
-            floorState = FloorState.BOTTOM;
-            return;
+            floorState = FloorState.BOTTOM; 
         }
 
-        //Case 2: if has base and is last index (last floor) (is floor)
-        if (stackBase != null)
+        //update childs (stacked objects)
+        foreach (GridObject stack in stackArray)
         {
-
-            foreach (GridObject stack in stackBase.stackArray)
+            if (stackArray[^1].floor == stack.floor)
             {
-                if (stackBase.stackArray[^1].floor == stack.floor)
-                {
-                    stack.floorState = FloorState.TOP;
-                }
-                else
-                {
-                    stack.floorState = FloorState.MIDDLE;
-                }
+                stack.floorState = FloorState.TOP;
             }
-
-            return;
+            else
+            {
+                stack.floorState = FloorState.MIDDLE;
+            }
         }
+        return;
 
-         floorState = FloorState.NONE;
 
     }
 
