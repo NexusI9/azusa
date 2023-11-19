@@ -63,6 +63,7 @@
     <Compile Include="Assets/Prefabs/GridMaster/Scripts/GridMaster.cs" />
     <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObject.cs" />
     <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObjectHelper.cs" />
+    <Compile Include="Assets/Prefabs/Camera/Scripts/OrbitCamera.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Raycaster.cs" />
     <Compile Include="Assets/Prefabs/Tile/Scripts/Tile.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Cursor.cs" />

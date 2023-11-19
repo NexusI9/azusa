@@ -74,8 +74,6 @@ public class GridObject : MonoBehaviour
         newChild.transform.localRotation = Quaternion.identity;
         return newChild;
     }
-
-
     
     public void MoveToTile(Vector3 newPosition)
     {
@@ -205,7 +203,6 @@ public class GridObject : MonoBehaviour
 
 
     }
-
 
     private void SetColliderSize()
     {
