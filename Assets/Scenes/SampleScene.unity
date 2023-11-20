@@ -123,6 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &424178449 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6021669802030412746, guid: 29a96f92bdb5a4c38b6de5fdeb3830f7, type: 3}
+  m_PrefabInstance: {fileID: 1176564198}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1176564198
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -248,7 +253,23 @@ PrefabInstance:
       propertyPath: m_TagString
       value: MainCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 6052458480509743523, guid: b13755c7a6dcc447ea651572fed1601a, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 424178449}
+    - target: {fileID: 6052458480509743523, guid: b13755c7a6dcc447ea651572fed1601a, type: 3}
+      propertyPath: zoomSpeed
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6052458480509743523, guid: b13755c7a6dcc447ea651572fed1601a, type: 3}
+      propertyPath: rotationSpeed
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 6123341045878288869, guid: b13755c7a6dcc447ea651572fed1601a, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7078747997839942217, guid: b13755c7a6dcc447ea651572fed1601a, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
