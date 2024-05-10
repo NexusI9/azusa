@@ -26,6 +26,11 @@ public class GridMaster : MonoBehaviour
     [Space]
 
 
+    [SerializeField]
+    protected GameObject _painter = null;
+
+    [Space]
+
     //Private
     protected Tile lastActiveTile;
     protected GridObject lastActiveObject;
@@ -40,14 +45,21 @@ public class GridMaster : MonoBehaviour
     private int[,] gridArray;
     protected GameObject[] tiles;
     protected List<GameObject> gridObjects;
+    private GridPainter gridPainter;
 
     // Start is called before the first frame update
     private void Start()
     {
-        this.gridArray = new int[_width, _height];
+
+        //DrawGrid
+        gridArray = new int[_width, _height];
         tiles = new GameObject[_width * _height];
         gridObjects = new List<GameObject>();
-        this.DrawGrid();
+        DrawGrid();
+
+        //GridPainter
+        gridPainter = GeneratePainter();
+
 
         //Debug
         objectSpawner = new ObjectSpawner();
@@ -60,7 +72,7 @@ public class GridMaster : MonoBehaviour
 
     private void Update()
     {
-        objectSpawner.Update();
+        //objectSpawner.Update();
     }
 
 
@@ -81,11 +93,19 @@ public class GridMaster : MonoBehaviour
     }
 
 
-    private GameObject GenerateTile(GameObject tile, int x, int y) {
+    private GridPainter GeneratePainter()
+    {
+        if(_painter == null) { return null;  }
+        GameObject painter = InstantiateAsChild(_painter);
+        return painter.GetComponent<GridPainter>();
+    }
+
+    private GameObject GenerateTile(GameObject tile, int x, int y)
+    {
         //Instantiate object as child and assign relative event/actions logic
         tile = InstantiateAsChild(_tile, new Vector3(x, 0, y));
         Tile tileComponent = tile.GetComponentInChildren<Tile>();
-        tileComponent.TileHover += this.OnTileHover;
+        tileComponent.TileHover += OnTileHover;
         return tile;
     }
 
@@ -139,13 +159,14 @@ public class GridMaster : MonoBehaviour
     private void OnTileHover(Tile tile)
     {
         lastActiveTile = tile;
+        Vector3 newPosition = tile.transform.position;
+
+        Debug.Log(gridPainter);
 
         //If a grid object is active
-        if(lastActiveObject != null)
+        if (lastActiveObject != null)
         {
             //1.Move the last active object
-
-            Vector3 newPosition = tile.transform.position;
             //check if object dimension is pair or not
             int zSize = lastActiveObject._zSize;
             int xSize = lastActiveObject._xSize;
@@ -162,7 +183,7 @@ public class GridMaster : MonoBehaviour
            lastActiveObject.MoveToTile(newPosition);
 
             //2. Check for hovered tiles to make them glow
-            foreach(GameObject tl in tiles)
+            foreach (GameObject tl in tiles)
             {
                 if( GridMasterHelper.isWithinBounds(tl, lastActiveObject.gameObject, xSize, zSize))
                 {
@@ -170,6 +191,14 @@ public class GridMaster : MonoBehaviour
                     tl.GetComponentInChildren<Tile>().SetGlow(true);
                 }
             }
+
+
+        }
+
+        //Move gridPainter
+        if (gridPainter != null)
+        {
+            gridPainter.MoveTo(newPosition);
         }
     }
 
