@@ -32,8 +32,8 @@ public class GridMaster : MonoBehaviour
     [Space]
 
     //Private
-    protected Tile lastActiveTile;
-    protected GridObject lastActiveObject;
+    protected static Tile lastActiveTile;
+    protected static GridObject lastActiveObject;
 
     //Debuging
     private ObjectSpawner objectSpawner;
@@ -72,7 +72,7 @@ public class GridMaster : MonoBehaviour
 
     private void Update()
     {
-        //objectSpawner.Update();
+        objectSpawner.Update();
     }
 
 
@@ -113,35 +113,6 @@ public class GridMaster : MonoBehaviour
     {
         //Instantiate object as child and assign relative event/actions logic
         gridObject = InstantiateAsChild(gridObject);
-        GridObject gridObjectComponent = gridObject.GetComponent<GridObject>();
-
-        //On Object Selection
-        gridObjectComponent.OnSelected += (GridObject selectedObject) =>
-        {
-            //Set global active Object
-            lastActiveObject = selectedObject;
-        };
-
-        //On Object Release
-        gridObjectComponent.MouseUp += (GridObject selectedObject) =>
-        {
-            LockTile(selectedObject._xSize, selectedObject._zSize);
-            lastActiveObject = null;
-        };
-
-        //On Object Hover
-        gridObjectComponent.MouseEnter += (GridObject hoveredObject) =>
-        {
-            if (
-                lastActiveObject != null && //if active object exists and being selected
-                lastActiveObject != hoveredObject && // if active object is different from hovered object
-                lastActiveObject.ID == hoveredObject.ID) // if have same ID => are stackable
-            {
-                lastActiveObject.StackUp(hoveredObject);
-            }
-        };
-
-
         return gridObject;
     }
 
@@ -158,10 +129,7 @@ public class GridMaster : MonoBehaviour
 
     private void OnTileHover(Tile tile)
     {
-        lastActiveTile = tile;
         Vector3 newPosition = tile.transform.position;
-
-        Debug.Log(gridPainter);
 
         //If a grid object is active
         if (lastActiveObject != null)
@@ -209,6 +177,7 @@ public class GridMaster : MonoBehaviour
         {
             foreach (GameObject tile in tiles)
             {
+                //Go through each gridobjects and check their position to lock related tiles
                 foreach(GameObject gridObject in gridObjects) {
                     bool matchLocation = GridMasterHelper.isWithinBounds(tile, gridObject, xSize, zSize);
                     Tile tileComponent = tile.GetComponentInChildren<Tile>();

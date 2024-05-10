@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile : MonoBehaviour
+public class Tile : GridMaster
 {
 
     //Events
@@ -58,8 +58,10 @@ public class Tile : MonoBehaviour
 
     private void OnMouseEnter()
     {
+
         SetGlow(true);
         //Update LastTilePosition in Grid
+        lastActiveTile = this;
         TileHover?.Invoke(this);
     }
 

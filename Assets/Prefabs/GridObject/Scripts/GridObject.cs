@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-public class GridObject : MonoBehaviour
+public class GridObject : GridMaster
 {
 
     public enum StackType
@@ -19,11 +18,6 @@ public class GridObject : MonoBehaviour
         MIDDLE,
         TOP
     }
-
-    //Events
-    public event System.Action<GridObject> MouseUp;
-    public event System.Action<GridObject> OnSelected;
-    public event System.Action<GridObject> MouseEnter;
 
     //Parameters
     public int ID = 0;
@@ -136,7 +130,15 @@ public class GridObject : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        MouseEnter?.Invoke(this);
+
+        if (
+            lastActiveObject != null && //if active object exists and being selected
+            lastActiveObject != this && // if active object is different from hovered object
+            lastActiveObject.ID == ID) // if have same ID => are stackable
+        {
+            lastActiveObject.StackUp(this);
+        }
+
     }
 
     private void OnMouseDown()
@@ -149,15 +151,15 @@ public class GridObject : MonoBehaviour
         }
         //activate selected object
         this.active = true;
-        OnSelected.Invoke(this);
+        lastActiveObject = this;
     }
 
     private void OnMouseUp()
     {
         //deactivate selected objet
         this.active = false;
-        MouseUp?.Invoke(this);
-
+        LockTile(this._xSize, this._zSize);
+        lastActiveObject = null;
         GridObjectHelper.GetInfo(this);
     }
 
