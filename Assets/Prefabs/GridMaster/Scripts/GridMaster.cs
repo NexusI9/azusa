@@ -31,9 +31,10 @@ public class GridMaster : MonoBehaviour
 
     [Space]
 
-    //Private
-    protected static Tile lastActiveTile;
+    //Global Children
+    protected static GridTile lastActiveTile;
     protected static GridObject lastActiveObject;
+    protected static GridPainter gridPainter;
 
     //Debuging
     private ObjectSpawner objectSpawner;
@@ -45,7 +46,7 @@ public class GridMaster : MonoBehaviour
     private int[,] gridArray;
     protected GameObject[] tiles;
     protected List<GameObject> gridObjects;
-    private GridPainter gridPainter;
+
 
     // Start is called before the first frame update
     private void Start()
@@ -104,8 +105,6 @@ public class GridMaster : MonoBehaviour
     {
         //Instantiate object as child and assign relative event/actions logic
         tile = InstantiateAsChild(_tile, new Vector3(x, 0, y));
-        Tile tileComponent = tile.GetComponentInChildren<Tile>();
-        tileComponent.TileHover += OnTileHover;
         return tile;
     }
 
@@ -127,51 +126,7 @@ public class GridMaster : MonoBehaviour
     }
 
 
-    private void OnTileHover(Tile tile)
-    {
-        Vector3 newPosition = tile.transform.position;
-
-        //If a grid object is active
-        if (lastActiveObject != null)
-        {
-            //1.Move the last active object
-            //check if object dimension is pair or not
-            int zSize = lastActiveObject._zSize;
-            int xSize = lastActiveObject._xSize;
-
-            if (xSize%2 == 0)
-            {
-                newPosition.x += xSize / (2f*xSize);
-            }
-            if (zSize%2 == 0)
-            { 
-                newPosition.z += zSize / (2f*zSize);
-            }
-
-           lastActiveObject.MoveToTile(newPosition);
-
-            //2. Check for hovered tiles to make them glow
-            foreach (GameObject tl in tiles)
-            {
-                if( GridMasterHelper.isWithinBounds(tl, lastActiveObject.gameObject, xSize, zSize))
-                {
-                    //if tile is within active object bounds then make it glow to show potential new location
-                    tl.GetComponentInChildren<Tile>().SetGlow(true);
-                }
-            }
-
-
-        }
-
-        //Move gridPainter
-        if (gridPainter != null)
-        {
-            gridPainter.MoveTo(newPosition);
-        }
-    }
-
-
-    protected void LockTile(int xSize, int zSize)
+    protected void LockTiles(int xSize, int zSize)
     {
         if (tiles != null)
         {
@@ -180,7 +135,7 @@ public class GridMaster : MonoBehaviour
                 //Go through each gridobjects and check their position to lock related tiles
                 foreach(GameObject gridObject in gridObjects) {
                     bool matchLocation = GridMasterHelper.isWithinBounds(tile, gridObject, xSize, zSize);
-                    Tile tileComponent = tile.GetComponentInChildren<Tile>();
+                    GridTile tileComponent = tile.GetComponentInChildren<GridTile>();
                     tileComponent.HandleLockState(matchLocation);
                     if (matchLocation)
                     {

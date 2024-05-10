@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Tile
+  m_Name: GridTile
   m_Shader: {fileID: -6465566751694194690, guid: bbb088e74d06d46ac9c92f2d5e007134, type: 3}
   m_Parent: {fileID: 2100000, guid: 17dbeb7ed580e41daa80d2e191f450f1, type: 2}
   m_ModifiedSerializedProperties: 0

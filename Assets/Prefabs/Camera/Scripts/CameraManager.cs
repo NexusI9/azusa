@@ -1,12 +1,35 @@
 using UnityEngine;
 
-public class OrbitCamera : MonoBehaviour
+public enum CameraState
 {
+    REST,
+    ROTATE,
+    MOVE
+}
+
+public class CameraManager : MonoBehaviour
+{
+
+    private static CameraManager _instance;
+
+    public static CameraManager Instance
+    {
+        get {
+            return _instance;
+        }
+    }
+
     public float moveSpeed = 5f;
     public float zoomSpeed = 5f;
     public float rotationSpeed = 2f;
     public bool restrictBelowFloor = true;
-    private bool isOrbiting = false;
+
+    public static CameraState state;
+
+    private void Awake()
+    {
+        _instance = this;
+    }
 
     private void Update()
     {
@@ -22,15 +45,16 @@ public class OrbitCamera : MonoBehaviour
         // Check for right mouse button input
         if (Input.GetMouseButtonDown(1))
         {
-            isOrbiting = true;
+
+            state = CameraState.ROTATE;
         }
         else if (Input.GetMouseButtonUp(1))
         {
-            isOrbiting = false;
+            state = CameraState.REST;
         }
 
         // Orbit around the floor using horizontal scroll only when right mouse button is pressed
-        if (isOrbiting)
+        if (state == CameraState.ROTATE)
         {
             Orbit();
         }

@@ -229,6 +229,10 @@ PrefabInstance:
       propertyPath: m_BackGroundColor.r
       value: 0.04423283
       objectReference: {fileID: 0}
+    - target: {fileID: 158676350354650373, guid: b13755c7a6dcc447ea651572fed1601a, type: 3}
+      propertyPath: rotationSpeed
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 1760833830535653667, guid: b13755c7a6dcc447ea651572fed1601a, type: 3}
       propertyPath: _interactions.Array.size
       value: 1

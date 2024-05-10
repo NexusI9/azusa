@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile : GridMaster
+public class GridTile : GridMaster
 {
-
-    //Events
-    public event System.Action<Tile> TileHover;
 
     //Parameters
     public bool locked = false;
@@ -59,10 +56,54 @@ public class Tile : GridMaster
     private void OnMouseEnter()
     {
 
+        if(CameraManager.state == CameraState.ROTATE)
+        {
+            return;
+        }
+
         SetGlow(true);
         //Update LastTilePosition in Grid
         lastActiveTile = this;
-        TileHover?.Invoke(this);
+
+        Vector3 newPosition = transform.position;
+
+        //If a grid object is active
+        if (lastActiveObject != null)
+        {
+            //1.Move the last active object
+            //check if object dimension is pair or not
+            int zSize = lastActiveObject._zSize;
+            int xSize = lastActiveObject._xSize;
+
+            if (xSize % 2 == 0)
+            {
+                newPosition.x += xSize / (2f * xSize);
+            }
+            if (zSize % 2 == 0)
+            {
+                newPosition.z += zSize / (2f * zSize);
+            }
+
+            lastActiveObject.MoveToTile(newPosition);
+
+            //2. Check for hovered tiles to make them glow
+            /*foreach (GameObject tl in tiles)
+            {
+                if (GridMasterHelper.isWithinBounds(tl, lastActiveObject.gameObject, xSize, zSize))
+                {
+                    //if tile is within active object bounds then make it glow to show potential new location
+                    tl.GetComponentInChildren<GridTile>().SetGlow(true);
+                }
+            }*/
+
+
+        }
+
+        //Move gridPainter
+        if (gridPainter != null)
+        {
+            gridPainter.MoveTo(newPosition);
+        }
     }
 
     private void OnMouseExit()

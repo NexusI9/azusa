@@ -158,7 +158,7 @@ public class GridObject : GridMaster
     {
         //deactivate selected objet
         this.active = false;
-        LockTile(this._xSize, this._zSize);
+        LockTiles(this._xSize, this._zSize);
         lastActiveObject = null;
         GridObjectHelper.GetInfo(this);
     }
