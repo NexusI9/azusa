@@ -24,6 +24,14 @@ public class CameraManager : MonoBehaviour
     public float rotationSpeed = 2f;
     public bool restrictBelowFloor = true;
 
+    [Space]
+
+    public Transform targetObject; // The object the camera is looking at
+    public float minDistance = 5f; // Minimum distance from the object
+    public float maxDistance = 20f; // Maximum distance from the object
+    public float minAngle = 10f; // Minimum rotation angle when close to the object
+    public float maxAngle = 45f; // Maximum rotation angle when far from the object
+
     public static CameraState state;
 
     private void Awake()
@@ -69,6 +77,29 @@ public class CameraManager : MonoBehaviour
     private void ZoomCamera(float scrollWheel)
     {
         transform.Translate(Vector3.forward * scrollWheel * zoomSpeed, Space.Self);
+
+        // Raycast downward to find the position of the floor
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit))
+        {
+            // Check if the hit object is a child of the floor
+            if (hit.transform.IsChildOf(targetObject))
+            {
+                // Calculate the distance between the camera and the hit point
+                float distance = Vector3.Distance(transform.position, hit.point);
+
+                // Clamp the distance between minDistance and maxDistance
+                distance = Mathf.Clamp(distance, minDistance, maxDistance);
+
+                // Interpolate the rotation angle based on the distance
+                float t = Mathf.InverseLerp(minDistance, maxDistance, distance);
+                float targetAngle = Mathf.Lerp(minAngle, maxAngle, t);
+
+                // Update the camera's rotation based on the target angle
+                Quaternion targetRotation = Quaternion.Euler(targetAngle, transform.eulerAngles.y, transform.eulerAngles.z);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            }
+        }
     }
 
     private void Orbit()

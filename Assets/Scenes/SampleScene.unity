@@ -146,11 +146,11 @@ PrefabInstance:
       objectReference: {fileID: 2444359134047796655, guid: 6d70efb943ade46028998bbd061244a0, type: 3}
     - target: {fileID: 9299887658224329, guid: 29a96f92bdb5a4c38b6de5fdeb3830f7, type: 3}
       propertyPath: _width
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 9299887658224329, guid: 29a96f92bdb5a4c38b6de5fdeb3830f7, type: 3}
       propertyPath: _height
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 9299887658224329, guid: 29a96f92bdb5a4c38b6de5fdeb3830f7, type: 3}
       propertyPath: _painter
