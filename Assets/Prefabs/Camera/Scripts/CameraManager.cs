@@ -88,7 +88,7 @@ public class CameraManager : MonoBehaviour
         transform.Translate(scrollWheel * zoomSpeed * CameraObject.transform.forward, Space.Self);
 
         // Raycast downward to find the position of the floor
-        /*RaycastHit hit;
+        RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit))
         {
             // Check if the hit object is a child of the floor
@@ -107,8 +107,9 @@ public class CameraManager : MonoBehaviour
                 // Update the child camera's rotation based on the target angle
                 Quaternion targetRotation = Quaternion.Euler(targetAngle, transform.eulerAngles.y, transform.eulerAngles.z);
                 CameraObject.transform.rotation = Quaternion.Lerp(CameraObject.transform.rotation, targetRotation, Time.deltaTime * 5f);
+                
             }
-        }*/
+        }
     }
 
     private void Orbit()
