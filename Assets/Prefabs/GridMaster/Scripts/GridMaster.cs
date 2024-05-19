@@ -73,7 +73,7 @@ public class GridMaster : MonoBehaviour
 
     private void Update()
     {
-        objectSpawner.Update();
+        //objectSpawner.Update();
     }
 
 

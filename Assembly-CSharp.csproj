@@ -64,9 +64,11 @@
     <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObject.cs" />
     <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObjectHelper.cs" />
     <Compile Include="Assets/Prefabs/GridPainter/Scripts/GridPainter.cs" />
+    <Compile Include="Assets/Prefabs/Environment/EnvironmentManager.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/CameraManager.cs" />
     <Compile Include="Assets/Prefabs/GridTile/Scripts/GridTile.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Raycaster.cs" />
+    <Compile Include="Assets/Prefabs/Sky/Scripts/SkyBox.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Cursor.cs" />
     <Compile Include="Assets/Prefabs/GridMaster/Scripts/GridMasterHelper.cs" />
     <Compile Include="Assets/Prefabs/GridMaster/Scripts/ObjectSpawner.cs" />

@@ -19,7 +19,6 @@ public class GridPainter : MonoBehaviour
 
     public void MoveTo(Vector3 newPosition)
     {
-        Debug.Log(newPosition);
         newPosition.y = 0.01f;
         transform.position = newPosition;
         //move the grid upward a little to prevent zbuffer issue with tile

@@ -70,6 +70,8 @@ public class CameraManager : MonoBehaviour
 
     private void MoveCamera(float horizontal, float vertical)
     {
+
+        Debug.Log(horizontal);
         Vector3 moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
     }
