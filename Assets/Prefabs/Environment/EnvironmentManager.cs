@@ -91,7 +91,7 @@ public class EnvironmentManager : MonoBehaviour
 
     protected virtual void updateMoment(int index, DayMoment moment)
     {
-        Debug.Log(moment);
+        //Debug.Log(moment);
     }
 
 
