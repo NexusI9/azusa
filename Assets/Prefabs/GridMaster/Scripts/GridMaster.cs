@@ -14,7 +14,11 @@ public class GridMaster : MonoBehaviour
     protected int _width = 4;
 
     [SerializeField]
-    [Tooltip("Number of height tiles")]
+    [Tooltip("Number of length tiles")]
+    protected int _length = 4;
+
+    [SerializeField]
+    [Tooltip("Number of max height tiles")]
     protected int _height = 4;
 
     [Space]
@@ -43,7 +47,7 @@ public class GridMaster : MonoBehaviour
     protected GameObject _spawn = null;
 
     protected int cellSize = 1;
-    private int[,] gridArray;
+    private int[,,] gridArray;
     protected GameObject[] tiles;
     protected List<GameObject> gridObjects;
 
@@ -53,8 +57,8 @@ public class GridMaster : MonoBehaviour
     {
 
         //DrawGrid
-        gridArray = new int[_width, _height];
-        tiles = new GameObject[_width * _height];
+        gridArray = new int[_width, _length, _height];
+        tiles = new GameObject[_width * _length * _height];
         gridObjects = new List<GameObject>();
         DrawGrid();
 
@@ -81,16 +85,20 @@ public class GridMaster : MonoBehaviour
     {
         for ( int x = 0; x < gridArray.GetLength(0); x++)
         {
-            for( int y = 0; y < gridArray.GetLength(1); y++)
-            {   
-                if (_tile) {
-                    int index = x + y * gridArray.GetLength(0);
-                    tiles[index] = GenerateTile(_tile, x, y);
+            for( int z = 0; z < gridArray.GetLength(1); z++)
+            {
+                for (int y = 0; y < gridArray.GetLength(2); y++)
+                {
+                    if (_tile)
+                    {
+                        int index = x + z * gridArray.GetLength(0);
+                        //store tile in array for fututre referencing and checking
+                        tiles[index] = GenerateTile(_tile, x, y, z);
+                    }
+                    else { GridMasterHelper.DrawLine(_width, _length, cellSize, x, z); }
                 }
-                else { GridMasterHelper.DrawLine(_width, _height, cellSize, x, y); }
             }
         }
-
     }
 
 
@@ -101,10 +109,15 @@ public class GridMaster : MonoBehaviour
         return painter.GetComponent<GridPainter>();
     }
 
-    private GameObject GenerateTile(GameObject tile, int x, int y)
+    private GameObject GenerateTile(GameObject tile, int x, int z, int y)
     {
-        //Instantiate object as child and assign relative event/actions logic
-        tile = InstantiateAsChild(_tile, new Vector3(x, 0, y));
+        //instantiate object as child
+        tile = InstantiateAsChild(tile, new Vector3(x, y, z));
+
+        //set first level tiles active by default
+        GridTile tileComponent = tile.GetComponentInChildren<GridTile>();
+        tileComponent.SetActive(y == 0);
+        tileComponent.SetLevel(y);
         return tile;
     }
 
@@ -125,7 +138,6 @@ public class GridMaster : MonoBehaviour
         return newObject;
     }
 
-
     protected void LockTiles(int xSize, int zSize)
     {
         if (tiles != null)
@@ -134,9 +146,13 @@ public class GridMaster : MonoBehaviour
             {
                 //Go through each gridobjects and check their position to lock related tiles
                 foreach(GameObject gridObject in gridObjects) {
+
+                    //check if grid object occupies currrent tile location
                     bool matchLocation = GridMasterHelper.isWithinBounds(tile, gridObject, xSize, zSize);
                     GridTile tileComponent = tile.GetComponentInChildren<GridTile>();
-                    tileComponent.HandleLockState(matchLocation);
+
+                    //lock the tile or not if there is a gridobject at this position
+                    tileComponent.setLocked(matchLocation);
                     if (matchLocation)
                     {
                         tileComponent.SetGlow(false);

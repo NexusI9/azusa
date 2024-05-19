@@ -26,7 +26,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _Glow: 0
-    - _StrokeWidth: 9.49
+    - _StrokeWidth: 8.58
+    - _Transparency: 1
     m_Colors:
     - _StrokeColor: {r: 0.1970452, g: 0.22810191, b: 0.33962262, a: 1}
   m_BuildTextureStacks: []

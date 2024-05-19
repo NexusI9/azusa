@@ -6,7 +6,9 @@ public class GridTile : GridMaster
 {
 
     //Parameters
-    public bool locked = false;
+    public bool locked = false; //occupied by a grid object
+    private bool active = false; //visually visible, can welcome an object
+    private int level = 0; //grid level
 
     //Private
     private Material material;
@@ -16,10 +18,12 @@ public class GridTile : GridMaster
     {
         //Instiantiate new material from existing one
         material = new Material(GetComponent<Renderer>().material);
+        
 
         //Assign new instance to gameObject
         gameObject.GetComponent<Renderer>().material = material;
         defaultTileColor = material.GetColor("_TileColor");
+
     }
 
     private void Update()
@@ -28,7 +32,7 @@ public class GridTile : GridMaster
     }
 
 
-    public void HandleLockState(bool locked)
+    public void setLocked(bool locked)
     {
         if (locked)
         {
@@ -52,11 +56,35 @@ public class GridTile : GridMaster
         }
     }
 
+    public void SetActive(bool act)
+    {
+        active = act;
+
+        //disable Mesh Renderer and Collider Component
+        MeshRenderer meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        if (active)
+        {
+            meshRenderer.enabled = true;
+            meshCollider.enabled = true;
+        }
+        else if(active == false)
+        {
+            meshRenderer.enabled = false;
+            meshCollider.enabled = false;
+        }
+    }
+
+    public void SetLevel(int lvl)
+    {
+        level = lvl;
+    }
+
 
     private void OnMouseEnter()
     {
 
-        if(CameraManager.state == CameraState.ROTATE)
+        if(CameraManager.state == CameraState.ROTATE || active == false)
         {
             return;
         }
