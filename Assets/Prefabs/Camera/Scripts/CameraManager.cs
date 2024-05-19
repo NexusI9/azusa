@@ -19,13 +19,18 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    [Header("Core")]
+    public GameObject CameraObject;
+
+    [Space]
+    [Header("Movement")]
     public float moveSpeed = 5f;
     public float zoomSpeed = 5f;
     public float rotationSpeed = 2f;
     public bool restrictBelowFloor = true;
 
     [Space]
-
+    [Header("Angle")]
     public Transform targetObject; // The object the camera is looking at
     public float minDistance = 5f; // Minimum distance from the object
     public float maxDistance = 20f; // Maximum distance from the object
@@ -33,6 +38,8 @@ public class CameraManager : MonoBehaviour
     public float maxAngle = 45f; // Maximum rotation angle when far from the object
 
     public static CameraState state;
+    private Vector3 lastHitPoint;
+
 
     private void Awake()
     {
@@ -53,14 +60,14 @@ public class CameraManager : MonoBehaviour
         // Check for right mouse button input
         if (Input.GetMouseButtonDown(1))
         {
-
             state = CameraState.ROTATE;
         }
         else if (Input.GetMouseButtonUp(1))
         {
             state = CameraState.REST;
+            lastHitPoint = Vector3.zero;
         }
-
+       
         // Orbit around the floor using horizontal scroll only when right mouse button is pressed
         if (state == CameraState.ROTATE)
         {
@@ -71,17 +78,17 @@ public class CameraManager : MonoBehaviour
     private void MoveCamera(float horizontal, float vertical)
     {
 
-        Debug.Log(horizontal);
         Vector3 moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+        transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.Self);
     }
 
     private void ZoomCamera(float scrollWheel)
     {
-        transform.Translate(Vector3.forward * scrollWheel * zoomSpeed, Space.Self);
+
+        transform.Translate(scrollWheel * zoomSpeed * CameraObject.transform.forward, Space.Self);
 
         // Raycast downward to find the position of the floor
-        RaycastHit hit;
+        /*RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit))
         {
             // Check if the hit object is a child of the floor
@@ -97,11 +104,11 @@ public class CameraManager : MonoBehaviour
                 float t = Mathf.InverseLerp(minDistance, maxDistance, distance);
                 float targetAngle = Mathf.Lerp(minAngle, maxAngle, t);
 
-                // Update the camera's rotation based on the target angle
+                // Update the child camera's rotation based on the target angle
                 Quaternion targetRotation = Quaternion.Euler(targetAngle, transform.eulerAngles.y, transform.eulerAngles.z);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+                CameraObject.transform.rotation = Quaternion.Lerp(CameraObject.transform.rotation, targetRotation, Time.deltaTime * 5f);
             }
-        }
+        }*/
     }
 
     private void Orbit()
@@ -114,10 +121,13 @@ public class CameraManager : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             // Get the point on the floor where the ray hits
-            Vector3 hitPoint = hit.point;
+            if (lastHitPoint == Vector3.zero)
+            {
+                lastHitPoint = hit.point;
+            }
 
             // Orbit the camera around the hit point
-            transform.RotateAround(hitPoint, Vector3.up, Input.GetAxis("Mouse X") * rotationSpeed);
+            transform.RotateAround(lastHitPoint, Vector3.up, Input.GetAxis("Mouse X") * rotationSpeed);
         }
     }
 
