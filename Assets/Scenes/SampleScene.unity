@@ -270,7 +270,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29a96f92bdb5a4c38b6de5fdeb3830f7, type: 3}
---- !u!1001 &1310595176
+--- !u!1001 &1227406887
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -280,8 +280,28 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3316288822298751428, guid: bb1b81b509cd24c8aaaa909cd9b3ff7c, type: 3}
       propertyPath: m_Name
-      value: Environment
+      value: EnvironmentManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7562729911210151111, guid: bb1b81b509cd24c8aaaa909cd9b3ff7c, type: 3}
+      propertyPath: skyMaterials.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562729911210151111, guid: bb1b81b509cd24c8aaaa909cd9b3ff7c, type: 3}
+      propertyPath: skyMaterials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 501cdf38512f642bab5271ff10afd940, type: 2}
+    - target: {fileID: 7562729911210151111, guid: bb1b81b509cd24c8aaaa909cd9b3ff7c, type: 3}
+      propertyPath: skyMaterials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: ac179fbe16fc94344b0d85ee4c62d6c4, type: 2}
+    - target: {fileID: 7562729911210151111, guid: bb1b81b509cd24c8aaaa909cd9b3ff7c, type: 3}
+      propertyPath: skyMaterials.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: 638471138ec59481cbeaec3f1f413def, type: 2}
+    - target: {fileID: 7562729911210151111, guid: bb1b81b509cd24c8aaaa909cd9b3ff7c, type: 3}
+      propertyPath: skyMaterials.Array.data[3]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8e53455f9969e473e9a8646840c2add8, type: 2}
     - target: {fileID: 8106521259900369936, guid: bb1b81b509cd24c8aaaa909cd9b3ff7c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -393,6 +413,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1176564198}
-  - {fileID: 1310595176}
+  - {fileID: 1227406887}
   - {fileID: 1343705803}
   - {fileID: 208252822}

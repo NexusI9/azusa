@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 
 public enum DayState
@@ -14,7 +15,7 @@ public enum DayState
 public class DayMoment
 {
     public DayState state;
-    public float startPercent;
+    public float startTime;
     public float transitionTime;
 }
 
@@ -40,29 +41,25 @@ public class EnvironmentManager : MonoBehaviour
 
     //Time
     [SerializeField]
+    [Header("Time")]
     public bool _runTime = true;
     public float _dayTotalTime = 24f; //length of a day in minute
-    public float _speedFactor = 1f;
+    public float _timeSpeed = 1f;
     private DayTime time = new DayTime { hours = 0f, minutes = 0f, seconds=0f };
+    public static event Action<int, DayMoment> OnUpdateMoment;
 
     //Cycle
     [Space]
-    private DayMoment[] dayMoments = new DayMoment[]
-    {
-        new DayMoment{ state = DayState.SUNRISE, startPercent = 15f, transitionTime = 20f },
-        new DayMoment{ state = DayState.DAY, startPercent = 20f, transitionTime = 10f },
-        new DayMoment{ state = DayState.SUNSET, startPercent = 60f, transitionTime = 20f},
-        new DayMoment{ state = DayState.NIGHT, startPercent = 70f, transitionTime = 10f }
-    };
+    private DayMoment[] dayMoments;
    
-    private int currentMomentIndex = 0;
+    private int currentMomentIndex = -1;
     protected static DayState currentDayState;
 
     private void updateTime()
     {
 
         //Update Global Hour an Minutes
-        time.seconds += Time.deltaTime * _speedFactor;
+        time.seconds += Time.deltaTime * _timeSpeed;
         if(time.seconds >= time.length)
         {
             time.seconds = 0;
@@ -71,15 +68,19 @@ public class EnvironmentManager : MonoBehaviour
         time.hours = Mathf.FloorToInt(time.seconds / 60f);
         time.minutes = Mathf.FloorToInt(time.seconds % 60f);
 
-        //Debug.Log(time.hours + ":" + time.minutes);
+        //Debug.Log(time.hours + ":" + time.minutes + ":" + time.seconds);
 
-        //update day moment depending on current time
-        for(int d = 0; d < dayMoments.Length; d++) {
-            DayMoment currentDayMoment = dayMoments[d];
-            if (time.hours >= time.length * currentDayMoment.startPercent/100 && currentMomentIndex != d)
+        //update day moment depending on current time percentage
+        int numberDays = dayMoments.Length;
+        for (int d = 0; d < numberDays; d++) {
+            DayMoment currentMoment = dayMoments[d];
+            DayMoment nextMoment = dayMoments[(d+1)%dayMoments.Length];
+            if ( ((d < numberDays - 1 && time.hours >= currentMoment.startTime && time.hours < nextMoment.startTime) ||
+                 (d == numberDays - 1 && time.hours >= currentMoment.startTime)) &&
+                currentMomentIndex != d)
             {
                 currentMomentIndex = d;
-                updateMoment(d, currentDayMoment);
+                OnUpdateMoment?.Invoke(d, currentMoment);
             }
         }
     }
@@ -89,17 +90,20 @@ public class EnvironmentManager : MonoBehaviour
         _instance = this;
     }
 
-    protected virtual void updateMoment(int index, DayMoment moment)
-    {
-        //Debug.Log(moment);
-    }
-
 
     void Start()
     {
    
         //Start Cycle
         time.length = _dayTotalTime * 60f;
+
+        //Set days Moments
+        dayMoments = new DayMoment[] {
+            new DayMoment { state = DayState.SUNRISE, startTime = 1f, transitionTime = 10f / _timeSpeed },
+            new DayMoment { state = DayState.DAY, startTime = 2f, transitionTime = 10f / _timeSpeed },
+            new DayMoment { state = DayState.SUNSET, startTime = 3f, transitionTime = 10f / _timeSpeed },
+            new DayMoment { state = DayState.NIGHT, startTime = 4f, transitionTime = 10f / _timeSpeed }
+        };
     }
 
     void Update()
