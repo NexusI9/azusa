@@ -158,7 +158,10 @@ public class GridObject : GridMaster
     {
         //deactivate selected objet
         this.active = false;
-        LockTiles(this._xSize, this._zSize);
+        //LockTiles(this._xSize, this._zSize);
+        //store object bounds (coordinate) in array (x,y,z)
+        //go through array and LockTile at thos coordinate
+
         lastActiveObject = null;
         GridObjectHelper.GetInfo(this);
     }
