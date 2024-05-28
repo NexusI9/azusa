@@ -11,7 +11,7 @@ public class SkyBox : MonoBehaviour
 
     private void OnEnable()
     {
-        EnvironmentManager.OnUpdateMoment += OnUpdateMoment;
+        TimeManager.OnUpdateMoment += OnUpdateMoment;
         if (skyMaterials[currentIndex])
         {
             RenderSettings.skybox = skyMaterials[currentIndex];
@@ -21,7 +21,7 @@ public class SkyBox : MonoBehaviour
 
     private void OnDisable()
     {
-        EnvironmentManager.OnUpdateMoment -= OnUpdateMoment;
+        TimeManager.OnUpdateMoment -= OnUpdateMoment;
     }
 
 

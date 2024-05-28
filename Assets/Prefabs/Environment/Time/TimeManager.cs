@@ -28,10 +28,10 @@ public class DayTime
 }
 
 
-public class EnvironmentManager : MonoBehaviour
+public class TimeManager : MonoBehaviour
 {
-    private static EnvironmentManager _instance;
-    public static EnvironmentManager Instance
+    private static TimeManager _instance;
+    public static TimeManager Instance
     {
         get
         {
