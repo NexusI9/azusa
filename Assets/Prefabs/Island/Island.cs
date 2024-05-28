@@ -5,25 +5,27 @@ using UnityEngine;
 
 public class Island : MonoBehaviour
 {
-    private int segments = 12;
-    private float radius = 5f;
+    public int segments = 30;
+    public float radius = 1f;
+    public float noiseScale = 0.2f;
+    public float noiseAmplitude = 10f;
+    public float randomness = 12f;
 
-    // Start is called before the first frame update
     void Start()
     {
-        Circle topCircle = new Circle() { segments = segments, radius = radius };
+        Circle topCircle = new Circle() {
+            segments = segments,
+            radius = radius,
+            noiseScale = noiseScale,
+            noiseAmplitude = noiseAmplitude,
+            randomness = randomness
+        };
         Mesh topCircleMesh = topCircle.Mesh();
 
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
-         
         gameObject.GetComponent<MeshFilter>().mesh = topCircleMesh;
         //gameObject.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Standard"));
-
-        //gameObject.transform.localScale = new Vector3(10, 10, 10);
-
- 
-
     }
 
     private void OnDrawGizmos()
@@ -40,6 +42,7 @@ public class Island : MonoBehaviour
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(vert[i], 0.3f);
+            Gizmos.DrawLine(vert[i], vert[(i+1)%vert.Length]);
         }
     }
 
