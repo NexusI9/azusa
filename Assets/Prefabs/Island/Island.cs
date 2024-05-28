@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Island : MonoBehaviour
 {
-    private int segments = 100;
+    private int segments = 12;
     private float radius = 5f;
 
     // Start is called before the first frame update

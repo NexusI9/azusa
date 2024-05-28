@@ -53,17 +53,13 @@ public class Circle : MonoBehaviour
 
     private Vector3[] Vertices(Delaunator dn)
     {
-        IEnumerable<ITriangle> triangles = dn.GetTriangles();
+        
         List<Vector3> vertices = new List<Vector3>();
       
-        foreach (ITriangle t in triangles)
+        foreach (IPoint pt in dn.Points)
         {
-            foreach(IPoint pt in t.Points)
-            {
-                //Get points stored in triangles
-                vertices.Add(new Vector3((float) pt.X, 0, (float)pt.Y));
-            }
-
+          //Get points stored in triangles
+          vertices.Add(new Vector3((float) pt.X, 0, (float)pt.Y));
         }
 
         return vertices.ToArray();
