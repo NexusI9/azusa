@@ -60,18 +60,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Prefabs/Camera/Scripts/FreeFlyCamera.cs" />
-    <Compile Include="Assets/Prefabs/GridMaster/Scripts/GridMaster.cs" />
-    <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObject.cs" />
-    <Compile Include="Assets/Prefabs/GridObject/Scripts/GridObjectHelper.cs" />
-    <Compile Include="Assets/Prefabs/GridPainter/Scripts/GridPainter.cs" />
-    <Compile Include="Assets/Prefabs/Environment/EnvironmentManager.cs" />
+    <Compile Include="Assets/Prefabs/Grid/GridMaster/Scripts/GridMaster.cs" />
+    <Compile Include="Assets/Prefabs/Grid/GridTile/Scripts/GridTile.cs" />
+    <Compile Include="Assets/Prefabs/Island/Circle.cs" />
+    <Compile Include="Assets/Prefabs/Grid/GridObject/Scripts/GridObject.cs" />
+    <Compile Include="Assets/Prefabs/Grid/GridMaster/Scripts/GridMasterHelper.cs" />
+    <Compile Include="Assets/Prefabs/Environment/Time/TimeManager.cs" />
+    <Compile Include="Assets/Prefabs/Grid/GridPainter/Scripts/GridPainter.cs" />
+    <Compile Include="Assets/Prefabs/Grid/GridMaster/Scripts/ObjectSpawner.cs" />
+    <Compile Include="Assets/Prefabs/Environment/Sky/Scripts/SkyBox.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/CameraManager.cs" />
-    <Compile Include="Assets/Prefabs/GridTile/Scripts/GridTile.cs" />
+    <Compile Include="Assets/Prefabs/Grid/GridObject/Scripts/GridObjectHelper.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Raycaster.cs" />
-    <Compile Include="Assets/Prefabs/Sky/Scripts/SkyBox.cs" />
     <Compile Include="Assets/Prefabs/Camera/Scripts/Cursor.cs" />
-    <Compile Include="Assets/Prefabs/GridMaster/Scripts/GridMasterHelper.cs" />
-    <Compile Include="Assets/Prefabs/GridMaster/Scripts/ObjectSpawner.cs" />
+    <Compile Include="Assets/Prefabs/Island/Island.cs" />
     <Compile Include="Assets/Prefabs/Cursor/CursorController.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -323,6 +325,9 @@
     </Reference>
     <Reference Include="UnityEditor.UnityConnectModule">
       <HintPath>/Applications/Unity/2022.3.12f1/Unity.app/Contents/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="DelaunatorSharp">
+      <HintPath>Library/PackageCache/com.nol1fe.delaunator@4bb1d3d212/Runtime/DelaunatorSharp.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>/Applications/Unity/2022.3.12f1/Unity.app/Contents/UnityReferenceAssemblies/unity-4.8-api/mscorlib.dll</HintPath>
@@ -755,6 +760,9 @@
     </Reference>
     <Reference Include="Unity.AI.Navigation.Updater">
       <HintPath>Library/ScriptAssemblies/Unity.AI.Navigation.Updater.dll</HintPath>
+    </Reference>
+    <Reference Include="DelaunatorSharp.Runtime">
+      <HintPath>Library/ScriptAssemblies/DelaunatorSharp.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="PPv2URPConverters">
       <HintPath>Library/ScriptAssemblies/PPv2URPConverters.dll</HintPath>
