@@ -29,7 +29,7 @@ public class SkyBox : MonoBehaviour
     {
         Material currentMaterial = skyMaterials[currentIndex];
         Material newMaterial = skyMaterials[index];
-        Debug.Log(index);
+
         if (newMaterial && currentMaterial && index != currentIndex)
         {
             currentIndex = index;

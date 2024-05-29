@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using DelaunatorSharp;
+using Triangulation;
 
-public class Circle : MonoBehaviour
+public class Circle
 {
 
     public int segments { get; set; }
@@ -13,32 +13,32 @@ public class Circle : MonoBehaviour
 
     private Mesh mesh = new Mesh();
 
-    public Circle() { }
-
     public Mesh Mesh()
     {
 
-        IPoint[] points = Points();
-        Delaunator dn = new Delaunator(points);
+        Vector2[] points = Points();
+        Triangulator triangulator = new Triangulator(points);
 
-        mesh.name = "Circle";
-        mesh.vertices = Vertices(dn);
-        mesh.triangles = Triangles(dn);
+        Debug.Log(triangulator);
+        /*if (triangulator)
+        {
+            mesh = triangulator.mesh;
 
-        //mesh.vertices = DefaultVertices(points);
-        //mesh.triangles = DefaultTriangles();
+            //mesh.vertices = DefaultVertices(points);
+            //mesh.triangles = DefaultTriangles();
+            //mesh.normals = Normals(mesh.vertices);
+            //mesh.uv = Uvs(mesh.vertices);
+        }*/
 
-        //mesh.normals = Normals(mesh.vertices);
-        //mesh.uv = Uvs(mesh.vertices);
 
         return mesh;
     }
 
-    private IPoint[] Points()
+    private Vector2[] Points()
     {
 
         //Setup initial points from which the delaunay triangulation will be calculated
-        IPoint[] pts = new IPoint[segments];
+        Vector2[] pts = new Vector2[segments];
 
         float angleStep = 360.0f / segments;
         for (int i = 0; i < segments; i++)
@@ -54,51 +54,10 @@ public class Circle : MonoBehaviour
             float adjustedRadius = radius + noise;
             adjustedRadius += Random.Range(-randomness, randomness);
 
-            pts[i] = new Point(x * adjustedRadius, z * adjustedRadius);
+            pts[i] = new Vector2(x * adjustedRadius, z * adjustedRadius);
         }
 
         return pts;
-    }
-
-    private Vector3[] Vertices(Delaunator dn)
-    {
-
-        List<Vector3> vertices = new List<Vector3>();
- 
-        foreach (IPoint pt in dn.Points)
-        {
-            //Get points stored in triangles
-            vertices.Add(new Vector3((float)pt.X, 0, (float)pt.Y));
-        }
-
-        return vertices.ToArray();
-    }
-
-
-
-    private int[] Triangles(Delaunator dn)
-    {
-        IEnumerable<ITriangle> triangles = dn.GetTriangles();
-        List<int> tris = new List<int>();
-        //int tIndex = 0;
-
-        for(int i = 0; i < dn.Triangles.Length; i++)
-        {
-            Debug.Log(dn.Triangles);
-            tris.Add(dn.Triangles[i]);
-        }
-
-        /*foreach (ITriangle t in triangles)
-        {
-            foreach (int index in dn.PointsOfTriangle(tIndex))
-            {
-                Debug.Log(index);
-                //tris.Add(index);
-            }
-            tIndex++;
-        }*/
-
-        return tris.ToArray();
     }
 
 
@@ -144,7 +103,7 @@ public class Circle : MonoBehaviour
         return tris.ToArray();
     }
 
-    private Vector3[] DefaultVertices(IPoint[] points)
+    private Vector3[] DefaultVertices(Vector2[] points)
     {
         List<Vector3> vertices = new List<Vector3>();
 
@@ -152,8 +111,8 @@ public class Circle : MonoBehaviour
         // Calculate the vertices around the circle
         for (int p = 0; p < points.Length; p++)
         {
-            IPoint currentPoint = points[p];
-            vertices.Add(new Vector3((float)currentPoint.X, 0, (float)currentPoint.Y));
+            Vector2 currentPoint = points[p];
+            vertices.Add(new Vector3(currentPoint.x, 0, currentPoint.y));
         }
 
         return vertices.ToArray();
