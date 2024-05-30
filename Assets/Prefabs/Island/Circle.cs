@@ -7,24 +7,28 @@ using Utils;
  Circles are the base armature of the islands, they are simply 2d circles deformed
  with noise and that can be triangulated
  */
+
+
 public class Circle
 {
 
-    public int segments { get; set; }
-    public float radius { get; set; }
-    public float noiseScale { get; set; }
-    public float noiseAmplitude { get; set; }
-    public float randomness { get; set; }
+    public int segments { get; set; } = 30;
+    public float radius { get; set; } = 1f;
+    public float noiseScale { get; set; } = 0.58f;
+    public float noiseAmplitude { get; set; } = 13.41f;
+    public float randomness { get; set; } = 1.3f;
+    public Vector3 position { get; set; } = new Vector3(0,0,0);
 
-    private Mesh mesh = new Mesh();
+    public Mesh mesh { get; private set; }
 
-    public Mesh Mesh()
+    public void Spawn()
     {
 
         Vector2[] points = Points();
         Triangulator triangulator = new Triangulator(points);
         mesh = triangulator.mesh;
 
+        SetPosition(position);
         //mesh.vertices = DefaultVertices(points);
         //mesh.triangles = DefaultTriangles();
         //mesh.normals = Normals(mesh.vertices);
@@ -33,10 +37,9 @@ public class Circle
         Debugger.DrawPolygon(new Polygon()
         {
             points = mesh.vertices
-        }) ;
-
-        return mesh;
+        });
     }
+
 
 
     private Vector2[] Points()
@@ -65,7 +68,6 @@ public class Circle
         return pts;
     }
 
-
     private Vector2[] Uvs(Vector3[] vertices)
     {
         Vector2[] uvs = new Vector2[vertices.Length];
@@ -88,7 +90,6 @@ public class Circle
 
         return normals.ToArray();
     }
-
 
     private int[] DefaultTriangles()
     {
@@ -121,5 +122,18 @@ public class Circle
         }
 
         return vertices.ToArray();
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+
+        Vector3[] tempVert = mesh.vertices;
+        for(int i = 0; i < mesh.vertices.Length; i++)
+        {
+            tempVert[i] = tempVert[i] + position;
+        }
+
+        mesh.vertices = tempVert;
+        mesh.RecalculateBounds();
     }
 }

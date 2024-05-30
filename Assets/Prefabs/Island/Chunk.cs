@@ -13,32 +13,47 @@ public class Chunk
     //Base Circle Configuration
     public int segments = 30;
     public float radius = 1f;
-    public float noiseScale = 0.58f;
-    public float noiseAmplitude = 13.41f;
-    public float randomness = 1.3f;
+
+    //Chunk depth
+    public float depth = 3;
 
     private List<Circle> circles = new List<Circle>();
 
     public Mesh Spawn(Vector2 position)
     {
-        Circle newCircle = new Circle()
+
+        //1. Set Ground
+        Circle ground = new Circle()
         {
             segments = segments,
-            radius = radius,
-            noiseScale = noiseScale,
-            noiseAmplitude = noiseAmplitude,
-            randomness = randomness
+            radius = radius
         };
 
-        //Build mesh (triangulation)
-        Mesh meshCircle = newCircle.Mesh();
+        //2. Set Belt
+        Circle belt = new Circle()
+        {
+            segments = (int) Mathf.Ceil(segments / 2),
+            radius = radius / 1.2f,
+            position = new Vector3(0, -1 * depth, 0)
+        };
 
-        //Update position;
-        //SetMeshPosition(meshCircle, position);
+        //3. Set Root
+
+        Circle root = new Circle()
+        {
+            segments = (int)Mathf.Ceil(segments / 2),
+            radius = radius / 2.5f,
+            position = new Vector3(0, -2 * depth, 0)
+        };
+
+
+        ground.Spawn();
+        belt.Spawn();
+        root.Spawn();
 
         //circles.Add(newCircle);
 
-        return meshCircle;
+        return ground.mesh;
 
     }
 

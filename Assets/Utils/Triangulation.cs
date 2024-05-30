@@ -103,7 +103,6 @@ namespace Triangulation
                 {
 
                     //Inside, append triangle indexes
-                    Debug.Log(tri.Index + ")\t" + nIntersection + "\t" + string.Join(",", delaunator.PointsOfTriangle(tri.Index)));
                     foreach ( int index in delaunator.PointsOfTriangle(tri.Index) ){
                         cleanTri.Add(index);
                     }
