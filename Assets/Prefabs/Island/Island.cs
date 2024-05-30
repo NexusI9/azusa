@@ -26,26 +26,5 @@ public class Island : MonoBehaviour
         //gameObject.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Standard"));
     }
 
-    private void OnDrawGizmos()
-    {
-        DrawVertices();
-    }
-
-    private void DrawVertices()
-    {
-        if (!gameObject.GetComponent<MeshFilter>()) { return;  } 
-        Vector3[] vert = gameObject.GetComponent<MeshFilter>().mesh.vertices;
-
-        for(int i = 0; i < vert.Length; i++)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(vert[i], 0.3f);
-            Gizmos.DrawLine(vert[i], vert[(i+1)%vert.Length]);
-        }
-    }
-
-    
-
-
 }
 

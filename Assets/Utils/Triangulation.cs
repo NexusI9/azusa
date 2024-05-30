@@ -22,17 +22,18 @@ namespace Triangulation
         public Triangulator (Vector2[] initPoints) {
 
             IPoint[] pts = Points(initPoints);
+            points = initPoints;
+
             delaunator = new Delaunator(pts);
 
             mesh = new Mesh();
             mesh.name = "Circle";
             mesh.vertices = Vertices();
-            //mesh.triangles = Triangles();
+            mesh.triangles = Triangles();
             
 
             vertices = mesh.vertices;
-            //triangles = mesh.triangles;
-            points = initPoints;
+            triangles = mesh.triangles;
             
         }
 
@@ -68,10 +69,10 @@ namespace Triangulation
 
         private int[] Triangles()
         {
-            IEnumerable<ITriangle> triangles = CleanTriangles(delaunator.GetTriangles());
+            int[] triangles = CleanTrianglesIndex(delaunator.GetTriangles());
             List<int> tris = new List<int>();
 
-            for (int i = 0; i < delaunator.Triangles.Length; i++)
+            for (int i = 0; i < triangles.Length; i++)
             {
                 tris.Add(delaunator.Triangles[i]);
             }
@@ -79,21 +80,23 @@ namespace Triangulation
             return tris.ToArray();
         }
 
-        private IEnumerable<ITriangle> CleanTriangles(IEnumerable<ITriangle> triangles)
+        private int[] CleanTrianglesIndex(IEnumerable<ITriangle> triangles)
         {
 
-            List<ITriangle> cleanTri = new List<ITriangle>();
+            List<int> cleanTri = new List<int>();
 
             int t = 0;
             foreach (ITriangle tri in triangles)
             {
+ 
                 //Get centroid Point coordinate of triangle
                 IPoint centroid = delaunator.GetCentroid(t);
 
                 //Go through each points of our initial shape and check the intersection number via raycasting vector
-                int nInterestion = 0;
+                int nIntersection = 0;
                 for (int pt = 0; pt < points.Length; pt++)
                 {
+                    
                     //Get current and new point to define our vector
                     Vector2 currentPoint = points[pt];
                     Vector2 nextPoint = points[(pt + 1) % points.Length];
@@ -103,19 +106,25 @@ namespace Triangulation
                     Point sideEnd = new Point() { X = nextPoint.x, Y = nextPoint.y };
 
                     //Check if centroid is in or out via raycasting
-                    if (IsIntersecting(centroid, sideStart, sideEnd)) nInterestion++;
+                    if (IsIntersecting(centroid, sideStart, sideEnd)) nIntersection++;
+                    
                 }
-
-                if((nInterestion & 1) == 1)
+      
+                if ((nIntersection & 1) == 1)
                 {
                     //Inside
-                    cleanTri.Add(tri);
+                    foreach( int index in delaunator.PointsOfTriangle(t) ){
+                        cleanTri.Add(index);
+                    }
+   
                 }
 
+                
                 t++;
+                
             }
 
-            return cleanTri;
+            return cleanTri.ToArray();
         }
 
         private bool IsIntersecting(IPoint point, IPoint sideStart, IPoint sideEnd)

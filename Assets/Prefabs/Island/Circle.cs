@@ -18,18 +18,14 @@ public class Circle
 
         Vector2[] points = Points();
         Triangulator triangulator = new Triangulator(points);
+        mesh = triangulator.mesh;
 
-        Debug.Log(triangulator);
-        /*if (triangulator)
-        {
-            mesh = triangulator.mesh;
+        //mesh.vertices = DefaultVertices(points);
+        //mesh.triangles = DefaultTriangles();
+        //mesh.normals = Normals(mesh.vertices);
+        //mesh.uv = Uvs(mesh.vertices);
 
-            //mesh.vertices = DefaultVertices(points);
-            //mesh.triangles = DefaultTriangles();
-            //mesh.normals = Normals(mesh.vertices);
-            //mesh.uv = Uvs(mesh.vertices);
-        }*/
-
+        Debugger.DrawPolygon(mesh.vertices);
 
         return mesh;
     }
