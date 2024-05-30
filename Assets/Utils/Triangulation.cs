@@ -27,11 +27,9 @@ namespace Triangulation
             delaunator = new Delaunator(pts);
 
             mesh = new Mesh();
-            mesh.name = "Circle";
             mesh.vertices = Vertices();
             mesh.triangles = Triangles();
             
-
             vertices = mesh.vertices;
             triangles = mesh.triangles;
             
@@ -100,12 +98,6 @@ namespace Triangulation
                     if (IsIntersecting(centroid, sideStart, sideEnd)) nIntersection++;
                     
                 }
-
-                Debugger.DrawLabel(new()
-                {
-                    text = "" + tri.Index,
-                    position = new Vector3((float) centroid.X, 1, (float) centroid.Y)
-                });
       
                 if ((nIntersection & 1) == 1)
                 {
@@ -131,8 +123,6 @@ namespace Triangulation
             float v1y1 = (float) point.Y;
             float v1x2 = 0.0f;
             float v1y2 = 100.0f;
-
-            //Debugger.DrawPolygon(new Vector3[] { new Vector3(v1x1, 0.0f, v1y1), new Vector3(v1x2, 0.0f, v1y2) });
 
             //Side
             float v2x1 = (float) sideStart.X;

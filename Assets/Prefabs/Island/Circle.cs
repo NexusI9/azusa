@@ -1,7 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Triangulation;
+using Utils;
 
+/*
+ Circles are the base armature of the islands, they are simply 2d circles deformed
+ with noise and that can be triangulated
+ */
 public class Circle
 {
 
@@ -32,6 +37,7 @@ public class Circle
 
         return mesh;
     }
+
 
     private Vector2[] Points()
     {
