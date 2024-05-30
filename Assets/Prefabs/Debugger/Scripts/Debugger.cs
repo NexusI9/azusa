@@ -5,6 +5,21 @@ using System;
 
 
 
+public class Label
+{
+    public string text { get; set; }
+    public Vector3 position { get; set; }
+}
+
+public class Polygon
+{
+    public Vector3[] points { get; set; }
+    public bool label { get; set; } = false;
+    public bool edges { get; set; } = true;
+    public Color color { get; set; } = Color.green;
+}
+
+
 
 public class Debugger : MonoBehaviour
 {
@@ -18,18 +33,32 @@ public class Debugger : MonoBehaviour
         }
     }
 
-    private static List<Vector3[]> polygons = new List<Vector3[]>();
+    private static List<Polygon> polygons = new List<Polygon>();
+    private static List<Label> labels = new List<Label>();
 
     private void Awake()
     {
         _instance = this;
     }
 
-    public static void DrawPolygon(Vector3[] points)
+    public static void DrawPolygon(Polygon points)
     {
         polygons.Add(points);
     }
 
+    public static void DrawLabel(Label label)
+    {
+        labels.Add(label);
+    }
+
+
+    private void DrawLabelGizmos(Label label)
+    {
+        #if UNITY_EDITOR
+                UnityEditor.Handles.color = Color.green;
+                UnityEditor.Handles.Label(label.position, label.text);
+        #endif
+    }
 
     private void DrawVertices(Vector3[] points)
     {
@@ -52,11 +81,42 @@ public class Debugger : MonoBehaviour
     {
         Gizmos.color = Color.green;
 
-        foreach(Vector3[] polygon in polygons)
+        //Draw Polygons
+        foreach(Polygon polygon in polygons)
         {
-            DrawVertices(polygon);
-            DrawEdges(polygon);
+            Gizmos.color = polygon.color;
+
+            //Display vertices
+            DrawVertices(polygon.points);
+
+            //Display edges
+            if (polygon.edges) DrawEdges(polygon.points);
+
+            //Display points locations for each points
+            if (polygon.label)
+            {
+                for(int p = 0; p < polygon.points.Length; p++)
+                {
+                    Vector3 currentPoint = polygon.points[p];
+                    DrawLabel(new Label()
+                    {
+                        text = "x:" + currentPoint.x + ", y:" + currentPoint.y + ", z:" + currentPoint.z,
+                        position = currentPoint + new Vector3(0.5f, 1, 0)
+                    });
+                }
+            }
         }
 
+        //Draw Labels
+        foreach (Label label in labels)
+        {
+            DrawLabelGizmos(label);
+        }
+    }
+
+    private void OnDisable()
+    {
+        polygons.Clear();
+        labels.Clear();
     }
 }

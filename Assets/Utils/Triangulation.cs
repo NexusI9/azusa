@@ -69,15 +69,7 @@ namespace Triangulation
 
         private int[] Triangles()
         {
-            int[] triangles = CleanTrianglesIndex(delaunator.GetTriangles());
-            List<int> tris = new List<int>();
-
-            for (int i = 0; i < triangles.Length; i++)
-            {
-                tris.Add(delaunator.Triangles[i]);
-            }
-
-            return tris.ToArray();
+            return CleanTrianglesIndex(delaunator.GetTriangles());
         }
 
         private int[] CleanTrianglesIndex(IEnumerable<ITriangle> triangles)
@@ -85,12 +77,11 @@ namespace Triangulation
 
             List<int> cleanTri = new List<int>();
 
-            int t = 0;
             foreach (ITriangle tri in triangles)
             {
  
                 //Get centroid Point coordinate of triangle
-                IPoint centroid = delaunator.GetCentroid(t);
+                IPoint centroid = delaunator.GetCentroid(tri.Index);
 
                 //Go through each points of our initial shape and check the intersection number via raycasting vector
                 int nIntersection = 0;
@@ -109,18 +100,23 @@ namespace Triangulation
                     if (IsIntersecting(centroid, sideStart, sideEnd)) nIntersection++;
                     
                 }
+
+                Debugger.DrawLabel(new()
+                {
+                    text = "" + tri.Index,
+                    position = new Vector3((float) centroid.X, 1, (float) centroid.Y)
+                });
       
                 if ((nIntersection & 1) == 1)
                 {
-                    //Inside
-                    foreach( int index in delaunator.PointsOfTriangle(t) ){
+
+                    //Inside, append triangle indexes
+                    Debug.Log(tri.Index + ")\t" + nIntersection + "\t" + string.Join(",", delaunator.PointsOfTriangle(tri.Index)));
+                    foreach ( int index in delaunator.PointsOfTriangle(tri.Index) ){
                         cleanTri.Add(index);
                     }
    
                 }
-
-                
-                t++;
                 
             }
 
@@ -133,8 +129,10 @@ namespace Triangulation
             //Ray
             float v1x1 = (float) point.X;
             float v1y1 = (float) point.Y;
-            float v1x2 = 200.0f;
+            float v1x2 = 0.0f;
             float v1y2 = 100.0f;
+
+            //Debugger.DrawPolygon(new Vector3[] { new Vector3(v1x1, 0.0f, v1y1), new Vector3(v1x2, 0.0f, v1y2) });
 
             //Side
             float v2x1 = (float) sideStart.X;

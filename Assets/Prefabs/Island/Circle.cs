@@ -25,7 +25,10 @@ public class Circle
         //mesh.normals = Normals(mesh.vertices);
         //mesh.uv = Uvs(mesh.vertices);
 
-        Debugger.DrawPolygon(mesh.vertices);
+        Debugger.DrawPolygon(new Polygon()
+        {
+            points = mesh.vertices
+        }) ;
 
         return mesh;
     }
