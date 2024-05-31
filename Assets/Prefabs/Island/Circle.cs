@@ -29,8 +29,6 @@ public class Circle
         mesh = triangulator.mesh;
 
         SetPosition(position);
-        //mesh.vertices = DefaultVertices(points);
-        //mesh.triangles = DefaultTriangles();
         //mesh.normals = Normals(mesh.vertices);
         //mesh.uv = Uvs(mesh.vertices);
 
