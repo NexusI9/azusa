@@ -8,8 +8,19 @@ using Utils;
  with noise and that can be triangulated
  */
 
+public interface ICircle
+{
+    public int segments { get; set; }
+    public float radius { get; set; }
+    public float noiseScale { get; set; }
+    public float noiseAmplitude { get; set; } 
+    public float randomness { get; set; }
+    public Vector3 position { get; set; }
+    public string name { get; set;  }
+}
 
-public class Circle
+
+public class Circle : ICircle
 {
 
     public int segments { get; set; } = 30;
@@ -18,6 +29,7 @@ public class Circle
     public float noiseAmplitude { get; set; } = 13.41f;
     public float randomness { get; set; } = 1.3f;
     public Vector3 position { get; set; } = new Vector3(0,0,0);
+    public string name { get; set; }
 
     public Mesh mesh { get; private set; }
 
@@ -32,10 +44,18 @@ public class Circle
         //mesh.normals = Normals(mesh.vertices);
         //mesh.uv = Uvs(mesh.vertices);
 
-        Debugger.DrawPolygon(new Polygon()
+        Debugger.Polygon(new Polygon()
         {
             points = mesh.vertices
         });
+
+        for(int i = 0; i < mesh.vertices.Length; i++)
+        {
+            Debugger.Label(new Label() {
+                text = "" + i,
+                position = mesh.vertices[i] + new Vector3(0,1,0)
+            });
+        }
     }
 
 

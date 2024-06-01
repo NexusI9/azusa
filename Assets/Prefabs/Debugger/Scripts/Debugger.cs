@@ -43,14 +43,20 @@ namespace Utils
             _instance = this;
         }
 
-        public static void DrawPolygon(Polygon points)
+        public static void Polygon(Polygon points)
         {
             polygons.Add(points);
         }
 
-        public static void DrawLabel(Label label)
+        public static void Label(Label label)
         {
             labels.Add(label);
+        }
+
+        public static void Log(object obj)
+        {
+            var output = JsonUtility.ToJson(obj, true);
+            Debug.Log(output);
         }
 
 
@@ -100,7 +106,7 @@ namespace Utils
                     for (int p = 0; p < polygon.points.Length; p++)
                     {
                         Vector3 currentPoint = polygon.points[p];
-                        DrawLabel(new Label()
+                        Label(new Label()
                         {
                             text = "x:" + currentPoint.x + ", y:" + currentPoint.y + ", z:" + currentPoint.z,
                             position = currentPoint + new Vector3(0.5f, 1, 0)
