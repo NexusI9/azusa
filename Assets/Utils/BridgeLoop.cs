@@ -22,17 +22,28 @@ namespace Utils
         public List<SuperiorPoint> Connections { get; set; }
     }
 
+    public class Edge
+    {
+        public Point Begin { get; set; }
+        public Point End { get; set; }
+    }
+
 
     public class BridgeLoop
     {
 
+        public List<Edge> Edges { get; private set; } = new List<Edge>();
+        public List<Point> Segments { get; private set; } = new List<Point>();
+
         private Vector3[] OriginPoints { get; set; }
         private Vector3[] TargetPoints { get; set; }
+        private int SegmentsAmount { get; set; }
 
-        public BridgeLoop(Vector3[] origin, Vector3[] target)
+        public BridgeLoop(Vector3[] origin, Vector3[] target, int segments = 0)
         {
             OriginPoints = origin;
             TargetPoints = target;
+            SegmentsAmount = segments;
         }
 
         private float Distance(Vector3 A, Vector3 B)
@@ -69,6 +80,28 @@ namespace Utils
             };
 
         }
+
+
+        private Mesh Segment(Mesh mesh)
+        {
+
+            List<Vector3> segmentsVertices = mesh.vertices.ToList();
+
+            for (int s = 0; s < SegmentsAmount; s++)
+            {
+                //place points every 1/segments amount
+                foreach (Edge edge in Edges)
+                {
+                    segmentsVertices.Add( edge.Begin.Position + s/SegmentsAmount * (edge.End.Position - edge.Begin.Position) );
+                }
+
+            }
+
+            return mesh;
+
+        }
+
+
 
         public Mesh Connect()
         {
@@ -217,10 +250,17 @@ namespace Utils
 
                 foreach (Point connection in currentPoint.Connections)
                 {
+                    //Create edges
+                    Edges.Add( new Edge()
+                    {
+                        Begin = connection,
+                        End = currentPoint
+                    });
+
                     Debugger.Polygon(new Polygon()
                     {
                         points = new Vector3[]{
-                            inferiorPoints[i].Position,
+                            currentPoint.Position,
                             connection.Position
                         }
                     });
@@ -228,7 +268,8 @@ namespace Utils
 
             }
 
-
+            //Segment connections into strats
+            tempMesh = Segment(tempMesh);
 
             /**
                 * go through each of our groups to plug triangles together
@@ -242,8 +283,6 @@ namespace Utils
                 *           [6]
                 *         realIndex
                 */
-
-
 
             return tempMesh;
         }
