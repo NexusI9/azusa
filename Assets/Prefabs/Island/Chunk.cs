@@ -17,6 +17,8 @@ public class Chunk
     //Chunk depth
     public float depth = 3;
 
+
+
     public List<Vector3> mesh = new List<Vector3>();
     private List<Circle> circles = new List<Circle>();
 

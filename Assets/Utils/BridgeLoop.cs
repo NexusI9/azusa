@@ -1,26 +1,38 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Utils
 {
 
-    public class VertiPoint
+    public class Point
     {
-       public int index { get; set; }
-       public Vector3 position { get; set; }
+       public int Index { get; set; }
+       public Vector3 Position { get; set; }
     }
+
+    public class SuperiorPoint : Point
+    {
+        public Point Connection { get; set; }
+    }
+
+    public class InferiorPoint : Point
+    {
+        public List<SuperiorPoint> Connections { get; set; }
+    }
+
 
     public class BridgeLoop
     {
 
-        Vector3[] originPoints;
-        Vector3[] targetPoints;
+        private Vector3[] OriginPoints { get; set; }
+        private Vector3[] TargetPoints { get; set; }
 
         public BridgeLoop(Vector3[] origin, Vector3[] target)
         {
-            originPoints = origin;
-            targetPoints = target;
+            OriginPoints = origin;
+            TargetPoints = target;
         }
 
         private float Distance(Vector3 A, Vector3 B)
@@ -32,31 +44,30 @@ namespace Utils
                );
         }
 
-        private int ClosestVertexIndex(VertiPoint[] group, Vector3[] target)
+
+            private Point ClosestPoint(Vector3 point, Vector3[] target)
         {
-            Vector3 averagePosition = new Vector3(0,0,0);
-
-            for(int i = 0; i < group.Length; i++)
-            {
-                averagePosition += group[i].position;
-            }
-
-            averagePosition /= group.Length;
 
             int closestIndex = 0;
             Vector3 closestPosition = Vector3.zero;
+
             for(int i = 0; i < target.Length; i++)
             {
 
                 if(closestPosition == Vector3.zero
-                    || Distance(averagePosition, target[i]) < Distance(averagePosition, closestPosition))
+                    || Distance(point, target[i]) < Distance(point, closestPosition))
                 {
                     closestIndex = i;
                     closestPosition = target[i];
                 }
             }
 
-            return closestIndex;
+            return new Point()
+            {
+                Index = closestIndex,
+                Position = closestPosition
+            };
+
         }
 
         public Mesh Connect()
@@ -69,14 +80,14 @@ namespace Utils
              * Simply combine origin and target points
              */
 
-            for (int i = 0; i < originPoints.Length; i++)
+            for (int i = 0; i < OriginPoints.Length; i++)
             {
-                combinedPoints.Add(originPoints[i]);
+                combinedPoints.Add(OriginPoints[i]);
             }
 
-            for (int j = 0; j < targetPoints.Length; j++)
+            for (int j = 0; j < TargetPoints.Length; j++)
             {
-                combinedPoints.Add(targetPoints[j]);
+                combinedPoints.Add(TargetPoints[j]);
             }
 
             //add combined vertices to temporary mesh
@@ -84,121 +95,149 @@ namespace Utils
 
 
             /*
-             * ===================== TRIANGLES ===================
+             * ===================== CLUSTER ===================
              * Segment "Superior" points depending on their proximity to Inferior points
+             *             ____________________
+             *            |                    |
+             * Superior   |  [0][1][2][3][4]   |    [5][6][7][8][9]
+             *            |    \__\_|_/__/     |       \__\_|_/__/
+             *            |         V          |            V
+             * Inferior   |        [0]         |           [1] ....
+             *            |____________________|
+             *                    Cluster
+             * Inferior becomes our Connection Points Target from which the superior points will
+             * have to "adapt" themeselves to the available points from inferior
              * 
-             * Superior     [0][1][2][3][4]     [5][6][7][8][9]
-             *                \__\_|_/__/         \__\_|_/__/
-             *                     V                   V
-             * Inferior           [0]                 [1] ....
              * 
+             *
             */
 
 
-            Vector3[] superior = originPoints.Length > targetPoints.Length ? originPoints : targetPoints;
-            Vector3[] inferior = originPoints.Length > targetPoints.Length ? targetPoints : originPoints;
+            Vector3[] superior = OriginPoints.Length > TargetPoints.Length ? OriginPoints : TargetPoints;
+            Vector3[] inferior = OriginPoints.Length > TargetPoints.Length ? TargetPoints : OriginPoints;
 
-            //Define points quantity in each groups
-            int divider = Mathf.CeilToInt(superior.Length / inferior.Length);
 
-            List<VertiPoint[]> groups = new List<VertiPoint[]>();
+            List<SuperiorPoint> superiorPoints = new List<SuperiorPoint>();
+            InferiorPoint[] inferiorPoints = new InferiorPoint[inferior.Length];
 
-            //1. Pack superior into inferior index
-            for (int i = 0; i < inferior.Length; i++)
+            //1. Fill up inferior points array
+            for (int i = 0; i < inferiorPoints.Length; i++)
             {
-                List<VertiPoint> group = new List<VertiPoint>();
-                for (int s = i; s < i + divider; s++)
+                inferiorPoints[i] = new InferiorPoint()
                 {
-                    if (s < superior.Length)
-                    {
-                        group.Add(new VertiPoint()
-                        {
-                            index = s,
-                            position = superior[s]
-                        });
-                    }
-
-                }
-
-                //Debug.Log($"{i}\t"+string.Join(",", group));
-                groups.Add(group.ToArray());
+                    Index = i,
+                    Position = inferior[i],
+                    Connections = new List<SuperiorPoint>()
+                };
             }
 
-            /*
-             * 2. Get the closest vertex index as our starting point (may be 0, but also 9) 
-             * and then loop from this starting index point
-             * 
-             * Group A:
-             * 
-             *        [0]--x--[1]
-             *             |
-             *  [10]------[9]---------[8]
-             *  
-             *  
-             *  Group B:
-             *  
-             *      [0]----[1]--x----[2]
-             *                 /
-             *                /  
-             *  [10]------[9]---------[8]
-             *             ------------>
-            */
-
-            int startIndex = ClosestVertexIndex(groups[0], inferior);
-
-            /*
-             * At this point groups and inferionr have the same length.
-             * Now we need to ensure that all our inferior vertex finds their superior group as to prevent holes.
-             * 
-             * In case our starting index is 6 : 
-             * 
-             *   [Group 1]   [Group 2]
-             *       |           |      ...
-             *      [6]         [7]    
-             */
-
-            //Go through each of our inferior index
-            List<int> triangles = new List<int>();
-            for (int i = startIndex; i < inferior.Length + startIndex; i++)
+            //2. First pass to connect Supertior --to--> Inferior depending on their proximity (Harmonisation Phase)
+            for(int i = 0; i < superior.Length; i++)
             {
-                int realIndex = i % inferior.Length;
-                VertiPoint[] currentGroup = groups[i];
+
+                /*
+                 * Get the closest vertex index for each of our points
+                 * 
+                 *  
+                 *      [0]----[1]----[2]
+                 *        \    /   ___/
+                 *         \  /___/ 
+                 *  [10----[9]----------------------[8]
+                 *  
+                */
+
+
+                Point connection = ClosestPoint(superior[i], inferior);
+                SuperiorPoint verti = new SuperiorPoint()
+                {
+                    Index = i,
+                    Position = superior[i],
+                    Connection = connection
+                };
+
 
                 /**
-                 * go through each of our groups to plug triangles together
-                 * 
-                 *    SupIndex NextSupIndex
-                 *      [0]--------[1]-------[2]
-                 *        \        /      ___/
-                 *         \  t1  /  t2__/ 
-                 *          \    /  __/    
-                 *           \  /__/
-                 *           [6]
-                 *         realIndex
+                 * Increment connection number value in our connection points array
+                 * as to later on detect if there are orphans or solo connected
                  */
 
-                for (int v = 0; v < currentGroup.Length; v++)
+                inferiorPoints[connection.Index].Connections.Add(verti);
+
+
+            }
+
+
+            /**
+             * 3. Second pass to check orphan inferior points (one that have either 1 or 0 connections)
+             * Since unity mesh works with triangle we need to ensure all point have at least 2 connections
+             * as to prevent holes in our mesh (Completion Phase)
+             */
+
+            for(int i = 0; i < inferiorPoints.Length; i++)
+            {
+                InferiorPoint currentPoint = inferiorPoints[i];
+                if (currentPoint.Connections.Count == 0)
                 {
+                    //Retrieve superior closest point
+                    Point closestSuperiorPoint = ClosestPoint(currentPoint.Position, superior );
 
-                    int SupIndex = v;
-                    int NextSupIndex = (v + 1) % currentGroup.Length;
-
-                    triangles.Add(SupIndex);
-                    triangles.Add(NextSupIndex);
-                    triangles.Add(realIndex);
-
-                    Debug.Log($"{i}\t{currentGroup[v].index}");
-                    Debugger.Polygon(new Polygon() {
-                        points = new Vector3[]
-                        {
-                             groups[i][SupIndex].position,
-                             inferior[realIndex]
-                        }
+                    //Add new Superior Point to our Inferior Connection List
+                    currentPoint.Connections.Add( new SuperiorPoint() {
+                        Index = closestSuperiorPoint.Index,
+                        Position = closestSuperiorPoint.Position,
+                        Connection = new Point() { Index = currentPoint.Index, Position = currentPoint.Position }
                     });
                 }
             }
 
-        return tempMesh;
+           /**
+            * 4. Automatically link up Inferior Point to previous latest Cluster Superior (n-1)
+            * 
+            * ]--[3]   [4]---[5]--[6]
+            *   /  \__   
+            *  /      \_   
+            * ]         \      
+            *            [2]
+            */
+
+            for (int i = 0; i < inferiorPoints.Length; i++)
+            {
+                InferiorPoint currentPoint = inferiorPoints[i];
+                InferiorPoint previousPoint = inferiorPoints[ i == 0 ? inferiorPoints.Length - 1 : i - 1 ];
+
+                currentPoint.Connections.Insert(0, previousPoint.Connections.Last());
+
+                foreach (Point connection in currentPoint.Connections)
+                {
+                    Debugger.Polygon(new Polygon()
+                    {
+                        points = new Vector3[]{
+                            inferiorPoints[i].Position,
+                            connection.Position
+                        }
+                    });
+                }
+
+            }
+
+
+
+            /**
+                * go through each of our groups to plug triangles together
+                * 
+                *    SupIndex NextSupIndex
+                *      [0]--------[1]-------[2]
+                *        \        /      ___/
+                *         \  t1  /  t2__/ 
+                *          \    /  __/    
+                *           \  /__/
+                *           [6]
+                *         realIndex
+                */
+
+
+
+            return tempMesh;
         }
 
     }
