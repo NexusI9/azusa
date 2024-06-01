@@ -187,7 +187,6 @@ namespace Utils
                     });
                 }
 
-                Debug.Log($"{i}\t{string.Join(",",currentPoint.Connections.Select(x => x.Index))}");
             }
 
 
@@ -206,8 +205,6 @@ namespace Utils
                 InferiorPoint currentPoint = inferiorPoints[i];
                 InferiorPoint previousPoint = inferiorPoints[ i == 0 ? inferiorPoints.Length - 1 : i - 1 ];
 
-
-                Debug.Log("length" + previousPoint.Connections.Count);
                 //Edgecase
                 if (i == 1 && previousPoint.Connections.Last().Index == previousPoint.Connections.Count - 1)
                 {
