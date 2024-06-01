@@ -116,8 +116,6 @@ namespace Utils
             Vector3[] superior = OriginPoints.Length > TargetPoints.Length ? OriginPoints : TargetPoints;
             Vector3[] inferior = OriginPoints.Length > TargetPoints.Length ? TargetPoints : OriginPoints;
 
-
-            List<SuperiorPoint> superiorPoints = new List<SuperiorPoint>();
             InferiorPoint[] inferiorPoints = new InferiorPoint[inferior.Length];
 
             //1. Fill up inferior points array
@@ -188,7 +186,10 @@ namespace Utils
                         Connection = new Point() { Index = currentPoint.Index, Position = currentPoint.Position }
                     });
                 }
+
+                Debug.Log($"{i}\t{string.Join(",",currentPoint.Connections.Select(x => x.Index))}");
             }
+
 
            /**
             * 4. Automatically link up Inferior Point to previous latest Cluster Superior (n-1)
@@ -205,7 +206,17 @@ namespace Utils
                 InferiorPoint currentPoint = inferiorPoints[i];
                 InferiorPoint previousPoint = inferiorPoints[ i == 0 ? inferiorPoints.Length - 1 : i - 1 ];
 
-                currentPoint.Connections.Insert(0, previousPoint.Connections.Last());
+
+                Debug.Log("length" + previousPoint.Connections.Count);
+                //Edgecase
+                if (i == 1 && previousPoint.Connections.Last().Index == previousPoint.Connections.Count - 1)
+                {
+                    currentPoint.Connections.Insert(0, previousPoint.Connections.First());
+                }
+                else
+                {
+                    currentPoint.Connections.Insert(0, previousPoint.Connections.Last());
+                }
 
                 foreach (Point connection in currentPoint.Connections)
                 {
