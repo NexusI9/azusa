@@ -47,7 +47,7 @@ public class Circle : ICircle
         mesh.uv = uvs.Planar(mesh.vertices);
 
         Normal normals = new Normal();
-        mesh.normals = normals.Set(mesh.vertices);
+        mesh.normals = normals.Set(mesh);
 
         SetPosition(position);
         //mesh.normals = Normals(mesh.vertices);

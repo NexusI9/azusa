@@ -367,11 +367,17 @@ namespace Utils
 
             }
 
+            tempMesh.triangles = Triangles.ToArray();
+
+
             //Generate uvs (cylindrical projections
             Uv uv = new Uv();
             tempMesh.uv = uv.Cylindrical(tempMesh.vertices);
 
-            tempMesh.triangles = Triangles.ToArray();
+            //Generate normals
+            Normal normal = new Normal();
+            tempMesh.normals = normal.Set(tempMesh);
+
             tempMesh.RecalculateNormals();
 
             //Segment connections into strats
