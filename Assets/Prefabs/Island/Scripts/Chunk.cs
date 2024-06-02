@@ -34,7 +34,8 @@ public class Chunk
             new Circle(){
                 name = "ground",
                 segments = segments,
-                radius = radius
+                radius = radius,
+                Smooth = true
             },
 
             //2. Set Belt
@@ -43,7 +44,8 @@ public class Chunk
                 name= "belt",
                 segments = (int) Mathf.Ceil(segments / 2),
                 radius = radius / 1.2f,
-                position = new Vector3(0, -1 * depth, 0)
+                position = new Vector3(0, -1 * depth, 0),
+                Smooth = false
             },
 
             //3. Set Root

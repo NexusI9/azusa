@@ -2,6 +2,7 @@
 using UnityEngine;
 using Triangulation;
 using Utils;
+using System.Linq;
 
 /*
  Circles are the base armature of the islands, they are simply 2d circles deformed
@@ -30,8 +31,9 @@ public class Circle : ICircle
     public float randomness { get; set; } = 1.3f;
     public Vector3 position { get; set; } = new Vector3(0,0,0);
     public string name { get; set; }
-    public bool Debug { get; set; } = false;
+    public bool DebugMode { get; set; } = false;
     public bool Smooth { get; set; } = false;
+    public int SmoothThresholdAngle { get; set; } = 110;
 
     public Mesh mesh { get; private set; }
 
@@ -42,7 +44,7 @@ public class Circle : ICircle
 
         if (Smooth)
         {
-            points = SmoothPeak(points, 10);
+            points = SmoothPeak(points, SmoothThresholdAngle);
         }
 
 
@@ -62,21 +64,70 @@ public class Circle : ICircle
         //mesh.uv = Uvs(mesh.vertices);
 
 
-        if (Debug)
+        if (DebugMode)
         {
             DebugCircle();
         }
 
     }
 
-    private Vector2[] SmoothPeak(Vector2[] vertices, float threshold)
+    private int mod(int x, int m)
     {
+        return (x % m + m) % m;
+    }
+
+    private Vector2[] SmoothPeak(Vector2[] points, float threshold)
+    {
+
+        List<Vector2> smoothedPoints = new List<Vector2>();
+        int nPeak = 0;
+
+
+        //prefill list
+        for(int i = 0; i < points.Length; i++)
+        {
+            smoothedPoints.Add(points[i]);
+        }
 
         //Check the angle of each 3 vertices
         //If angle < threshold then add two more vertices between and make peak point closer to ease
+        for(int i = 0; i < points.Length; i++)
+        {
+            Vector2 A = points[i];
+            Vector2 B = points[(i + 1) % points.Length];
+            Vector2 C = points[(i + 2) % points.Length];
+
+            Vector2 AB = A - B;
+            Vector2 BC = C - B;
+
+            bool isPeak = Vector2.Angle(AB, BC) < threshold;
+
+            if (isPeak) {
+
+                Vector2 halfAB = (A + B) / 2;
+                Vector2 halfBC = (C + B) / 2;
+
+                smoothedPoints[i + nPeak + 1] = (halfAB + B + halfBC) / 3;
+                smoothedPoints.Insert(i + nPeak + 1, halfAB);
+                smoothedPoints.Insert(i + nPeak + 3, halfBC);
+
+                nPeak += 2;
+            }
+
+        }
 
 
-        return vertices;
+        Debugger.Polygon(new Polygon()
+        {
+            points = smoothedPoints.ConvertAll(x => new Vector3(x.x, 0, x.y)).ToArray()
+        });
+
+        /*foreach (Vector2 pt in smoothedPoints)
+        {
+            Debug.Log(string.Join(",",smoothedPoints.Where(x => x == pt).ToArray()) );
+        }*/
+
+        return smoothedPoints.ToArray();
     }
 
 
