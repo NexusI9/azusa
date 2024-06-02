@@ -10,7 +10,7 @@ public class Island : MonoBehaviour
 
     private List<Chunk> Chunks = new List<Chunk>();
     public Material GroundMaterial;
-    public Material SideMaterial;
+    public Material RockMaterial;
 
     private void Start()
      {

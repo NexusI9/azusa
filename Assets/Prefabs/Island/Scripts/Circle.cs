@@ -38,8 +38,16 @@ public class Circle : ICircle
     {
 
         Vector2[] points = Points();
+
+
         Triangulator triangulator = new Triangulator(points);
         mesh = triangulator.mesh;
+
+        Uv uvs = new Uv();
+        mesh.uv = uvs.Planar(mesh.vertices);
+
+        Normal normals = new Normal();
+        mesh.normals = normals.Set(mesh.vertices);
 
         SetPosition(position);
         //mesh.normals = Normals(mesh.vertices);
@@ -98,28 +106,6 @@ public class Circle : ICircle
         return pts;
     }
 
-    private Vector2[] Uvs(Vector3[] vertices)
-    {
-        Vector2[] uvs = new Vector2[vertices.Length];
-        for (int i = 0; i < uvs.Length; i++)
-        {
-            uvs[i] = new Vector2(vertices[i].x / (radius * 2) + 0.5f, vertices[i].y / (radius * 2) + 0.5f);
-        }
-
-        return uvs;
-    }
-
-    private Vector3[] Normals(Vector3[] vertices)
-    {
-        List<Vector3> normals = new List<Vector3>();
-
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            normals.Add(-Vector3.forward);
-        }
-
-        return normals.ToArray();
-    }
 
     private int[] DefaultTriangles()
     {

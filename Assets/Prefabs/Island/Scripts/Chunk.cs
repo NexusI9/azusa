@@ -68,7 +68,22 @@ public class Chunk
 
             //Add ground to combine instance
             if (circle.name == "ground") combine[0].mesh = circle.mesh;
-            if (circle.name == "root") combine[3].mesh = circle.mesh;
+            if (circle.name == "root") {
+                //flip normal
+                Normal normal = new Normal();
+                Mesh flippedMesh = normal.Flip(circle.mesh);
+                //noise up
+                Vector3[] noiseVert = flippedMesh.vertices;
+
+                for (int v = 0; v < noiseVert.Length; v++)
+                {
+                    noiseVert[v].y -= Mathf.PerlinNoise(noiseVert[v].x * 0.6f, noiseVert[v].z * 0.6f) * 2;
+                    noiseVert[v].y += UnityEngine.Random.Range(-1f, 1f);
+                }
+
+                flippedMesh.vertices = noiseVert;
+                combine[3].mesh = flippedMesh;
+            }
 
         }
 
@@ -86,10 +101,11 @@ public class Chunk
             Mesh loop = bridgeLoop.Connect();
             combine[i + 1].mesh = loop;
         }
-        
-        //finalMesh.CombineMeshes(combine, true, false);
-        finalMesh.name = "chunk";
 
+        //Combine our chunk parts (Ground, Belt, Root...)
+        finalMesh.CombineMeshes(combine, true, false);
+        finalMesh.name = "chunk";
+        finalMesh.RecalculateNormals();
 
 
         Debugger.Polygon(new Polygon() {

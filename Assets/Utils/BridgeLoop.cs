@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Utils;
 
 namespace Utils
 {
@@ -274,11 +275,6 @@ namespace Utils
             {
                 InferiorPoint currentPoint = inferiorPoints[i];
                 InferiorPoint previousPoint = inferiorPoints[ i == 0 ? inferiorPoints.Length - 1 : i - 1 ];
-
-                if(i == 1)
-                {
-                    Debug.Log(string.Join(",",previousPoint.Connections.Select(x => x.Index)));
-                }
  
                 //Edgecase (NOT RESOLVED)
                 if (i == 1 && previousPoint.Connections.Count >= 3)
@@ -304,7 +300,6 @@ namespace Utils
                         }
                     }
 
-                    Debug.Log(maxBelowHalfConnection.Index);
                     currentPoint.Connections.Insert(0, maxBelowHalfConnection);
                 }
                 else
@@ -334,6 +329,7 @@ namespace Utils
                         Triangles.Add(currentConnection.Index);
                         Triangles.Add(nextConnection.Index);
                     }
+               
 
 
                     if (DebugMode)
@@ -370,6 +366,10 @@ namespace Utils
                 Triangles.Add(currentPoint.Connections.First().Index);
 
             }
+
+            //Generate uvs (cylindrical projections
+            Uv uv = new Uv();
+            tempMesh.uv = uv.Cylindrical(tempMesh.vertices);
 
             tempMesh.triangles = Triangles.ToArray();
             tempMesh.RecalculateNormals();
