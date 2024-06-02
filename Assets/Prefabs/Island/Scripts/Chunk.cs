@@ -103,11 +103,9 @@ public class Chunk
         }
 
         //Combine our chunk parts (Ground, Belt, Root...)
-        finalMesh.CombineMeshes(combine, true, false);
+        finalMesh.CombineMeshes(combine, false, false);
         finalMesh.name = "chunk";
-        finalMesh.RecalculateNormals();
 
-           
         return finalMesh;
 
     }

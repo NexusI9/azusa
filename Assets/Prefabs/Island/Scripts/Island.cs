@@ -20,7 +20,7 @@ public class Island : MonoBehaviour
          gameObject.AddComponent<MeshRenderer>();
          gameObject.GetComponent<MeshFilter>().mesh = baseChunk.Spawn(new Vector2(0, 0));
          
-         gameObject.GetComponent<MeshRenderer>().materials = new Material[] { GroundMaterial, RockMaterial};
+         gameObject.GetComponent<MeshRenderer>().materials = new Material[] { GroundMaterial, RockMaterial, RockMaterial, RockMaterial };
 
      }
 

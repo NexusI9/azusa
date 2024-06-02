@@ -30,7 +30,8 @@ public class Circle : ICircle
     public float randomness { get; set; } = 1.3f;
     public Vector3 position { get; set; } = new Vector3(0,0,0);
     public string name { get; set; }
-    public bool debug { get; set; } = false;
+    public bool Debug { get; set; } = false;
+    public bool Smooth { get; set; } = false;
 
     public Mesh mesh { get; private set; }
 
@@ -39,9 +40,15 @@ public class Circle : ICircle
 
         Vector2[] points = Points();
 
+        if (Smooth)
+        {
+            points = SmoothPeak(points, 10);
+        }
+
 
         Triangulator triangulator = new Triangulator(points);
         mesh = triangulator.mesh;
+
 
         Uv uvs = new Uv();
         mesh.uv = uvs.Planar(mesh.vertices);
@@ -49,16 +56,27 @@ public class Circle : ICircle
         Normal normals = new Normal();
         mesh.normals = normals.Set(mesh);
 
+
         SetPosition(position);
         //mesh.normals = Normals(mesh.vertices);
         //mesh.uv = Uvs(mesh.vertices);
 
 
-        if (debug)
+        if (Debug)
         {
             DebugCircle();
         }
 
+    }
+
+    private Vector2[] SmoothPeak(Vector2[] vertices, float threshold)
+    {
+
+        //Check the angle of each 3 vertices
+        //If angle < threshold then add two more vertices between and make peak point closer to ease
+
+
+        return vertices;
     }
 
 
