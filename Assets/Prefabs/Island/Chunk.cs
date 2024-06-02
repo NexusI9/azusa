@@ -25,7 +25,9 @@ public class Chunk
     public Mesh Spawn(Vector2 position)
     {
 
+        CombineInstance[] combine = new CombineInstance[4];
         Mesh finalMesh = new Mesh();
+
         List<Circle> circleConfig = new List<Circle>()
         {
             //1. Set Ground
@@ -58,9 +60,16 @@ public class Chunk
         //Loop through circles to make them spawn 
         foreach(Circle circle in circleConfig)
         {
+
+            circle.Spawn();
+
             //add circle to global array
             circles.Add(circle);
-            circle.Spawn();
+
+            //Add ground to combine instance
+            if (circle.name == "ground") combine[0].mesh = circle.mesh;
+            if (circle.name == "root") combine[3].mesh = circle.mesh;
+
         }
 
         int circlesLength = circles.Count;
@@ -70,12 +79,22 @@ public class Chunk
             Circle currentCircle = circles[i];
             Circle nextCircle = circles[(i + 1) % circlesLength];
 
-            BridgeLoop loop = new BridgeLoop(currentCircle.mesh.vertices, nextCircle.mesh.vertices);
-            finalMesh = loop.Connect();
+            //Bridge Circles together
+            BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.mesh.vertices, nextCircle.mesh.vertices) { DebugMode = true };
+
+            //Add bridged mesh to combine
+            Mesh loop = bridgeLoop.Connect();
+            combine[i + 1].mesh = loop;
         }
+        
+        //finalMesh.CombineMeshes(combine, true, false);
+        finalMesh.name = "chunk";
 
 
-        //circles.Add(newCircle);
+
+        Debugger.Polygon(new Polygon() {
+            points = finalMesh.vertices
+        });
 
         return finalMesh;
 
@@ -89,23 +108,4 @@ public class Chunk
         }
     }
 
-    private Mesh MergeCircles()
-    {
-
-        Mesh tempMesh = new Mesh();
-        List<Vector3> vertices = new List<Vector3>();
-
-        foreach (Circle circle in circles)
-        {
-
-        }
-
-        return null;
-    }
-
-
-    private void UpdateMesh()
-    {
-        //gameObject.GetComponent<MeshFilter>().mesh;
-    }
 }

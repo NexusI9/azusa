@@ -8,7 +8,9 @@ using System.Collections.Generic;
 public class Island : MonoBehaviour
 {
 
-    private List<Chunk> chunks = new List<Chunk>();
+    private List<Chunk> Chunks = new List<Chunk>();
+    public Material GroundMaterial;
+    public Material SideMaterial;
 
     private void Start()
      {
@@ -17,6 +19,7 @@ public class Island : MonoBehaviour
          gameObject.AddComponent<MeshFilter>();
          gameObject.AddComponent<MeshRenderer>();
          gameObject.GetComponent<MeshFilter>().mesh = baseChunk.Spawn(new Vector2(0, 0));
+         
          //gameObject.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Standard"));
 
      }

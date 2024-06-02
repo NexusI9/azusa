@@ -30,6 +30,7 @@ public class Circle : ICircle
     public float randomness { get; set; } = 1.3f;
     public Vector3 position { get; set; } = new Vector3(0,0,0);
     public string name { get; set; }
+    public bool debug { get; set; } = false;
 
     public Mesh mesh { get; private set; }
 
@@ -44,20 +45,31 @@ public class Circle : ICircle
         //mesh.normals = Normals(mesh.vertices);
         //mesh.uv = Uvs(mesh.vertices);
 
+
+        if (debug)
+        {
+            DebugCircle();
+        }
+
+    }
+
+
+    private void DebugCircle() {
+
         Debugger.Polygon(new Polygon()
         {
             points = mesh.vertices
         });
 
-        for(int i = 0; i < mesh.vertices.Length; i++)
+        for (int i = 0; i < mesh.vertices.Length; i++)
         {
-            Debugger.Label(new Label() {
+            Debugger.Label(new Label()
+            {
                 text = "" + i,
-                position = mesh.vertices[i] + new Vector3(0,1,0)
+                position = mesh.vertices[i] + new Vector3(0, 1, 0)
             });
         }
     }
-
 
 
     private Vector2[] Points()
