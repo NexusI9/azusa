@@ -95,7 +95,7 @@ public class Chunk
             Circle nextCircle = circles[(i + 1) % circlesLength];
 
             //Bridge Circles together
-            BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.mesh.vertices, nextCircle.mesh.vertices) { DebugMode = true };
+            BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.mesh.vertices, nextCircle.mesh.vertices);
 
             //Add bridged mesh to combine
             Mesh loop = bridgeLoop.Connect();
@@ -107,11 +107,7 @@ public class Chunk
         finalMesh.name = "chunk";
         finalMesh.RecalculateNormals();
 
-
-        Debugger.Polygon(new Polygon() {
-            points = finalMesh.vertices
-        });
-
+           
         return finalMesh;
 
     }
