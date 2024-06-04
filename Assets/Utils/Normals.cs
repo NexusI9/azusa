@@ -77,6 +77,15 @@ namespace Utils
             return mesh;
 
         }
+
+        public Vector3[] Smooth(Mesh mesh)
+        {
+
+
+            return mesh.normals;
+        }
+
+        
     }
 }
 

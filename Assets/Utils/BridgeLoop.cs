@@ -275,7 +275,13 @@ namespace Utils
             {
                 InferiorPoint currentPoint = inferiorPoints[i];
                 InferiorPoint previousPoint = inferiorPoints[ i == 0 ? inferiorPoints.Length - 1 : i - 1 ];
- 
+
+                if (i == 1)
+                {
+                    //Debug.Log("current :"+string.Join(",", currentPoint.Connections.Select(x => x.Index)));
+                    //Debug.Log("previous :"+string.Join(",", previousPoint.Connections.Select(x => x.Index)));
+                }
+
                 //Edgecase (NOT RESOLVED)
                 if (i == 1 && previousPoint.Connections.Count >= 3)
                 {
@@ -299,6 +305,8 @@ namespace Utils
                             }
                         }
                     }
+
+                    //Debug.Log("connect to "+maxBelowHalfConnection.Index);
 
                     currentPoint.Connections.Insert(0, maxBelowHalfConnection);
                 }

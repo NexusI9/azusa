@@ -9,216 +9,217 @@ using System.Linq;
  with noise and that can be triangulated
  */
 
-public interface ICircle
-{
-    public int segments { get; set; }
-    public float radius { get; set; }
-    public float noiseScale { get; set; }
-    public float noiseAmplitude { get; set; } 
-    public float randomness { get; set; }
-    public Vector3 position { get; set; }
-    public string name { get; set;  }
-}
 
-
-public class Circle : ICircle
+namespace Island
 {
 
-    public int segments { get; set; } = 30;
-    public float radius { get; set; } = 1f;
-    public float noiseScale { get; set; } = 0.58f;
-    public float noiseAmplitude { get; set; } = 13.41f;
-    public float randomness { get; set; } = 1.3f;
-    public Vector3 position { get; set; } = new Vector3(0,0,0);
-    public string name { get; set; }
-    public bool DebugMode { get; set; } = false;
-    public bool Smooth { get; set; } = false;
-    public int SmoothThresholdAngle { get; set; } = 110;
-
-    public Mesh mesh { get; private set; }
-
-    public void Spawn()
+    public interface ICircle
     {
-
-        Vector2[] points = Points();
-
-        if (Smooth)
-        {
-            points = SmoothPeak(points, SmoothThresholdAngle);
-        }
-
-
-        Triangulator triangulator = new Triangulator(points);
-        mesh = triangulator.mesh;
-
-
-        Uv uvs = new Uv();
-        mesh.uv = uvs.Planar(mesh.vertices);
-
-        Normal normals = new Normal();
-        mesh.normals = normals.Set(mesh);
-
-
-        SetPosition(position);
-        //mesh.normals = Normals(mesh.vertices);
-        //mesh.uv = Uvs(mesh.vertices);
-
-
-        if (DebugMode)
-        {
-            DebugCircle();
-        }
-
+        public int segments { get; set; }
+        public float radius { get; set; }
+        public float noiseScale { get; set; }
+        public float noiseAmplitude { get; set; }
+        public float randomness { get; set; }
+        public Vector3 position { get; set; }
+        public string name { get; set; }
     }
 
-    private int mod(int x, int m)
-    {
-        return (x % m + m) % m;
-    }
 
-    private Vector2[] SmoothPeak(Vector2[] points, float threshold)
+    public class Circle : ICircle
     {
 
-        List<Vector2> smoothedPoints = new List<Vector2>();
-        int nPeak = 0;
+        public int segments { get; set; } = 30;
+        public float radius { get; set; } = 1f;
+        public float noiseScale { get; set; } = 0.58f;
+        public float noiseAmplitude { get; set; } = 13.41f;
+        public float randomness { get; set; } = 1.3f;
+        public Vector3 position { get; set; } = new Vector3(0, 0, 0);
+        public string name { get; set; }
+        public bool DebugMode { get; set; } = false;
+        public bool Smooth { get; set; } = false;
+        public int SmoothThresholdAngle { get; set; } = 110;
 
+        public Mesh mesh { get; private set; }
 
-        //prefill list
-        for(int i = 0; i < points.Length; i++)
+        public void Spawn()
         {
-            smoothedPoints.Add(points[i]);
-        }
 
-        //Check the angle of each 3 vertices
-        //If angle < threshold then add two more vertices between and make peak point closer to ease
-        for(int i = 0; i < points.Length; i++)
-        {
-            Vector2 A = points[i];
-            Vector2 B = points[(i + 1) % points.Length];
-            Vector2 C = points[(i + 2) % points.Length];
+            Vector2[] points = Points();
 
-            Vector2 AB = A - B;
-            Vector2 BC = C - B;
+            if (Smooth)
+            {
+                points = SmoothPeak(points, SmoothThresholdAngle);
+            }
 
-            bool isPeak = Vector2.Angle(AB, BC) < threshold;
 
-            if (isPeak) {
+            Triangulator triangulator = new Triangulator(points);
+            mesh = triangulator.mesh;
 
-                Vector2 halfAB = (A + B) / 2;
-                Vector2 halfBC = (C + B) / 2;
 
-                smoothedPoints[i + nPeak + 1] = (halfAB + B + halfBC) / 3;
-                smoothedPoints.Insert(i + nPeak + 1, halfAB);
-                smoothedPoints.Insert(i + nPeak + 3, halfBC);
+            Uv uvs = new Uv();
+            mesh.uv = uvs.Planar(mesh.vertices);
 
-                nPeak += 2;
+            Normal normals = new Normal();
+            mesh.normals = normals.Set(mesh);
+
+
+            SetPosition(position);
+            //mesh.normals = Normals(mesh.vertices);
+            //mesh.uv = Uvs(mesh.vertices);
+
+
+            if (DebugMode)
+            {
+                DebugCircle();
             }
 
         }
 
 
-        Debugger.Polygon(new Polygon()
+        private Vector2[] SmoothPeak(Vector2[] points, float threshold)
         {
-            points = smoothedPoints.ConvertAll(x => new Vector3(x.x, 0, x.y)).ToArray()
-        });
 
-        /*foreach (Vector2 pt in smoothedPoints)
-        {
-            Debug.Log(string.Join(",",smoothedPoints.Where(x => x == pt).ToArray()) );
-        }*/
-
-        return smoothedPoints.ToArray();
-    }
+            List<Vector2> smoothedPoints = new List<Vector2>();
+            int nPeak = 0;
 
 
-    private void DebugCircle() {
-
-        Debugger.Polygon(new Polygon()
-        {
-            points = mesh.vertices
-        });
-
-        for (int i = 0; i < mesh.vertices.Length; i++)
-        {
-            Debugger.Label(new Label()
+            //prefill list
+            for (int i = 0; i < points.Length; i++)
             {
-                text = "" + i,
-                position = mesh.vertices[i] + new Vector3(0, 1, 0)
+                smoothedPoints.Add(points[i]);
+            }
+
+            //Check the angle of each 3 vertices
+            //If angle < threshold then add two more vertices between and make peak point closer to ease
+            for (int i = 0; i < points.Length; i++)
+            {
+                Vector2 A = points[i];
+                Vector2 B = points[(i + 1) % points.Length];
+                Vector2 C = points[(i + 2) % points.Length];
+
+                Vector2 AB = A - B;
+                Vector2 BC = C - B;
+
+                bool isPeak = Vector2.Angle(AB, BC) < threshold;
+
+                if (isPeak)
+                {
+
+                    Vector2 halfAB = (A + B) / 2;
+                    Vector2 halfBC = (C + B) / 2;
+
+                    if (smoothedPoints.Count > i + nPeak + 1)
+                    {
+                        smoothedPoints[i + nPeak + 1] = (halfAB + B + halfBC) / 3;
+                        smoothedPoints.Insert(i + nPeak + 1, halfAB);
+
+                        if (smoothedPoints.Count > i + nPeak + 3)
+                        {
+                            smoothedPoints.Insert(i + nPeak + 3, halfBC);
+                        }
+                    }
+
+                    nPeak += 2;
+                }
+
+            }
+
+            return smoothedPoints.ToArray();
+        }
+
+
+        private void DebugCircle()
+        {
+
+            Debugger.Polygon(new Polygon()
+            {
+                points = mesh.vertices
             });
+
+            for (int i = 0; i < mesh.vertices.Length; i++)
+            {
+                Debugger.Label(new Label()
+                {
+                    text = "" + i,
+                    position = mesh.vertices[i] + new Vector3(0, 1, 0)
+                });
+            }
         }
-    }
 
 
-    private Vector2[] Points()
-    {
-
-        //Setup initial points from which the delaunay triangulation will be calculated
-        Vector2[] pts = new Vector2[segments];
-
-        float angleStep = 360.0f / segments;
-        for (int i = 0; i < segments; i++)
+        private Vector2[] Points()
         {
 
-            //generate base circle coordinates
-            float angle = Mathf.Deg2Rad * (i * angleStep);
-            float x = Mathf.Cos(angle) * radius;
-            float z = Mathf.Sin(angle) * radius;
+            //Setup initial points from which the delaunay triangulation will be calculated
+            Vector2[] pts = new Vector2[segments];
 
-            //add noise
-            float noise = Mathf.PerlinNoise(x * noiseScale, z * noiseScale) * noiseAmplitude;
-            float adjustedRadius = radius + noise;
-            adjustedRadius += Random.Range(-randomness, randomness);
+            float angleStep = 360.0f / segments;
+            for (int i = 0; i < segments; i++)
+            {
 
-            pts[i] = new Vector2(x * adjustedRadius, z * adjustedRadius);
+                //generate base circle coordinates
+                float angle = Mathf.Deg2Rad * (i * angleStep);
+                float x = Mathf.Cos(angle) * radius;
+                float z = Mathf.Sin(angle) * radius;
+
+                //add noise
+                float noise = Mathf.PerlinNoise(x * noiseScale, z * noiseScale) * noiseAmplitude;
+                float adjustedRadius = radius + noise;
+                adjustedRadius += Random.Range(-randomness, randomness);
+
+                pts[i] = new Vector2(x * adjustedRadius, z * adjustedRadius);
+            }
+
+            return pts;
         }
 
-        return pts;
-    }
 
-
-    private int[] DefaultTriangles()
-    {
-
-        List<int> tris = new List<int>();
-        // Triangles
-        for (int i = 1; i <= segments; i++)
+        private int[] DefaultTriangles()
         {
-            int nextIndex = (i % segments) + 1;
 
-            // Triangle made of the center vertex, current vertex, and next vertex
-            tris.Add(0); // Center vertex
-            tris.Add(nextIndex);
-            tris.Add(i);
+            List<int> tris = new List<int>();
+            // Triangles
+            for (int i = 1; i <= segments; i++)
+            {
+                int nextIndex = (i % segments) + 1;
+
+                // Triangle made of the center vertex, current vertex, and next vertex
+                tris.Add(0); // Center vertex
+                tris.Add(nextIndex);
+                tris.Add(i);
+            }
+
+            return tris.ToArray();
         }
 
-        return tris.ToArray();
-    }
-
-    private Vector3[] DefaultVertices(Vector2[] points)
-    {
-        List<Vector3> vertices = new List<Vector3>();
-
-        vertices.Add(Vector3.zero);
-        // Calculate the vertices around the circle
-        for (int p = 0; p < points.Length; p++)
+        private Vector3[] DefaultVertices(Vector2[] points)
         {
-            Vector2 currentPoint = points[p];
-            vertices.Add(new Vector3(currentPoint.x, 0, currentPoint.y));
+            List<Vector3> vertices = new List<Vector3>();
+
+            vertices.Add(Vector3.zero);
+            // Calculate the vertices around the circle
+            for (int p = 0; p < points.Length; p++)
+            {
+                Vector2 currentPoint = points[p];
+                vertices.Add(new Vector3(currentPoint.x, 0, currentPoint.y));
+            }
+
+            return vertices.ToArray();
         }
 
-        return vertices.ToArray();
-    }
-
-    public void SetPosition(Vector3 position)
-    {
-
-        Vector3[] tempVert = mesh.vertices;
-        for(int i = 0; i < mesh.vertices.Length; i++)
+        public void SetPosition(Vector3 position)
         {
-            tempVert[i] = tempVert[i] + position;
-        }
 
-        mesh.vertices = tempVert;
-        mesh.RecalculateBounds();
+            Vector3[] tempVert = mesh.vertices;
+            for (int i = 0; i < mesh.vertices.Length; i++)
+            {
+                tempVert[i] = tempVert[i] + position;
+            }
+
+            mesh.vertices = tempVert;
+            mesh.RecalculateBounds();
+        }
     }
+
+
 }
