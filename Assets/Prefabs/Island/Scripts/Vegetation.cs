@@ -12,6 +12,12 @@ namespace Island
         ARID //++ rock, --grass, --tree
     }
 
+    /*
+     *Generate a biotope within a certain area
+     *Takes in a list of gameobject along with respective density
+     *And spread procedurally the vegetation depending on this density
+     */
+
     public class VegetationItem
     {
         public float Density { get; set; }

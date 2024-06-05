@@ -135,8 +135,8 @@ namespace Utils
 
                 Debugger.Polygon(new Polygon()
                     {
-                        points = tempMesh.vertices,
-                        edges = false
+                        Points = tempMesh.vertices,
+                        Edges = false
 
                  });
 
@@ -144,8 +144,8 @@ namespace Utils
                 {
                     Debugger.Label(new Label()
                     {
-                        text = "" + i,
-                        position = tempMesh.vertices[i] + new Vector3(0, 1, 0)
+                        Text = "" + i,
+                        Position = tempMesh.vertices[i] + new Vector3(0, 1, 0)
                     });
                 }
             }
@@ -345,7 +345,7 @@ namespace Utils
 
                     Debugger.Polygon(new Polygon()
                     {
-                        points = new Vector3[]{
+                        Points = new Vector3[]{
                             currentPoint.Position,
                             currentConnection.Position
                         }
@@ -353,15 +353,15 @@ namespace Utils
 
                     Debugger.Label(new Label()
                     {
-                        text = "" + currentConnection.Index,
-                        position = currentConnection.Position + new Vector3(0, 1, 0)
+                        Text = "" + currentConnection.Index,
+                        Position = currentConnection.Position + new Vector3(0, 1, 0)
                     });
 
 
                     Debugger.Label(new Label()
                     {
-                        text = "" + currentPoint.Index,
-                        position = currentPoint.Position + new Vector3(0, 1, 0)
+                        Text = "" + currentPoint.Index,
+                        Position = currentPoint.Position + new Vector3(0, 1, 0)
                     });
                 }
 

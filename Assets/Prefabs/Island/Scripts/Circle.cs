@@ -133,15 +133,15 @@ namespace Island
 
             Debugger.Polygon(new Polygon()
             {
-                points = mesh.vertices
+                Points = mesh.vertices
             });
 
             for (int i = 0; i < mesh.vertices.Length; i++)
             {
                 Debugger.Label(new Label()
                 {
-                    text = "" + i,
-                    position = mesh.vertices[i] + new Vector3(0, 1, 0)
+                    Text = "" + i,
+                    Position = mesh.vertices[i] + new Vector3(0, 1, 0)
                 });
             }
         }

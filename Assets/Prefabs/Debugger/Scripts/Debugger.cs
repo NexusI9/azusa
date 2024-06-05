@@ -9,16 +9,22 @@ namespace Utils
 
     public class Label
     {
-        public string text { get; set; }
-        public Vector3 position { get; set; }
+        public string Text { get; set; }
+        public Vector3 Position { get; set; }
     }
 
     public class Polygon
     {
-        public Vector3[] points { get; set; }
-        public bool label { get; set; } = false;
-        public bool edges { get; set; } = true;
-        public Color color { get; set; } = Color.green;
+        public Vector3[] Points { get; set; }
+        public bool Label { get; set; } = false;
+        public bool Edges { get; set; } = true;
+        public Color Color { get; set; } = Color.green;
+    }
+
+    public class Cube
+    {
+        public Vector3 Position { get; set; }
+        public Vector3 Size { get; set; }
     }
 
 
@@ -35,8 +41,9 @@ namespace Utils
             }
         }
 
-        private static List<Polygon> polygons = new List<Polygon>();
-        private static List<Label> labels = new List<Label>();
+        private static List<Polygon> Polygons = new List<Polygon>();
+        private static List<Label> Labels = new List<Label>();
+        private static List<Cube> Cubes = new List<Cube>();
 
         private void Awake()
         {
@@ -45,12 +52,17 @@ namespace Utils
 
         public static void Polygon(Polygon points)
         {
-            polygons.Add(points);
+            Polygons.Add(points);
         }
 
         public static void Label(Label label)
         {
-            labels.Add(label);
+            Labels.Add(label);
+        }
+
+        public static void Cube(Cube cube)
+        {
+            Cubes.Add(cube);
         }
 
         public static void Log(object obj)
@@ -64,7 +76,7 @@ namespace Utils
         {
 #if UNITY_EDITOR
             UnityEditor.Handles.color = Color.green;
-            UnityEditor.Handles.Label(label.position, label.text);
+            UnityEditor.Handles.Label(label.Position, label.Text);
 #endif
         }
 
@@ -90,42 +102,49 @@ namespace Utils
             Gizmos.color = Color.green;
 
             //Draw Polygons
-            foreach (Polygon polygon in polygons)
+            foreach (Polygon polygon in Polygons)
             {
-                Gizmos.color = polygon.color;
+                Gizmos.color = polygon.Color;
 
                 //Display vertices
-                DrawVertices(polygon.points);
+                DrawVertices(polygon.Points);
 
                 //Display edges
-                if (polygon.edges) DrawEdges(polygon.points);
+                if (polygon.Edges) DrawEdges(polygon.Points);
 
                 //Display points locations for each points
-                if (polygon.label)
+                if (polygon.Label)
                 {
-                    for (int p = 0; p < polygon.points.Length; p++)
+                    for (int p = 0; p < polygon.Points.Length; p++)
                     {
-                        Vector3 currentPoint = polygon.points[p];
+                        Vector3 currentPoint = polygon.Points[p];
                         Label(new Label()
                         {
-                            text = "x:" + currentPoint.x + ", y:" + currentPoint.y + ", z:" + currentPoint.z,
-                            position = currentPoint + new Vector3(0.5f, 1, 0)
+                            Text = "x:" + currentPoint.x + ", y:" + currentPoint.y + ", z:" + currentPoint.z,
+                            Position = currentPoint + new Vector3(0.5f, 1, 0)
                         });
                     }
                 }
             }
 
             //Draw Labels
-            foreach (Label label in labels)
+            foreach (Label label in Labels)
             {
                 DrawLabelGizmos(label);
             }
+
+            foreach(Cube cube in Cubes)
+            {
+               Gizmos.DrawWireCube(cube.Position, cube.Size);
+            }
+
+
         }
 
         private void OnDisable()
         {
-            polygons.Clear();
-            labels.Clear();
+            Polygons.Clear();
+            Labels.Clear();
         }
     }
 
