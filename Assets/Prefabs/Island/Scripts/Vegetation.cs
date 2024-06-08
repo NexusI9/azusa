@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
 namespace Island
 {
@@ -31,11 +33,17 @@ namespace Island
         private Mesh Area;
         private VegetationItem[] Items;
         public float DistanceFromEdge = 1.0f;
+        public int AreaVertices = 30;
 
         public Vegetation(Mesh Ar, VegetationItem[] It)
         {
             Area = Ar;
             Items = It;
+
+            if(DistanceFromEdge > 0)
+            {
+                ShrinkMesh();
+            }
         }
 
         public VegetationItem[] Generate()
@@ -45,6 +53,18 @@ namespace Island
 
 
             return Items;
+        }
+
+        private Mesh ShrinkMesh()
+        {
+
+            //Downsample and simplify shape
+            MeshUtils meshUtils = new MeshUtils(Area);
+            meshUtils.DownSample(AreaVertices);
+            meshUtils.Shrink(DistanceFromEdge);
+
+
+            return meshUtils.Mesh;
         }
     }
 
