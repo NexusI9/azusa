@@ -17,7 +17,7 @@ namespace Triangulation
         public int[] triangles { get; private set; }
 
         private Vector2[] points { get; set; }
-        private Delaunator delaunator { get; set; }
+        public Delaunator delaunator { get; set; }
 
         public Triangulator (Vector2[] initPoints) {
 

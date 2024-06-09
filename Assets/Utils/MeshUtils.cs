@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Utils;
 
+
 namespace Utils {
 
 
@@ -11,6 +12,16 @@ namespace Utils {
      */
     public class MeshUtils
     {
+
+
+        private static MeshUtils _instance;
+        public static MeshUtils Instance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
 
         public Mesh Mesh { get; private set; }
         private Mesh BaseMesh;
@@ -37,7 +48,24 @@ namespace Utils {
 
                 Mesh.vertices = vertices.ToArray();
             }
+
+            BaseMesh = Mesh;
             return Mesh;
+        }
+
+        public Vector2[] ToVector2(Vector3[] vertices)
+        {
+
+            List<Vector2> vectors = new List<Vector2>();
+
+            for(int i = 0; i < vertices.Length; i++)
+            {
+                Vector3 currVert = vertices[i];
+                vectors.Add(new Vector2( currVert.x, currVert.z ));
+            }
+
+            return vectors.ToArray();
+
         }
 
         public Mesh Shrink(float distance)
@@ -61,9 +89,33 @@ namespace Utils {
                 vertices.Add(shrinkPoint);
             }
 
+
             Mesh.vertices = vertices.ToArray();
 
+            BaseMesh = Mesh;
             return Mesh;
+
+        }
+
+
+        public Bounds BoundingBox()
+        {
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+
+
+            foreach (Vector3 vertex in BaseMesh.vertices)
+            {
+                minX = Mathf.Min(minX, vertex.x);
+                minY = Mathf.Min(minY, vertex.y);
+                maxX = Mathf.Max(maxX, vertex.x);
+                maxY = Mathf.Max(maxY, vertex.y);
+            }
+
+            return new Bounds(
+                new Vector2((minX + maxX) / 2, (minY + maxY) / 2),
+                new Vector2(maxX - minX, maxY - minY)
+            );
 
         }
 

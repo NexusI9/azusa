@@ -64,9 +64,11 @@ namespace Island
                 }
             };
 
+
             if (ground)
             {
-                Vegetation baseVegetation = new Vegetation(ground, IslandVegetation);
+                Vegetation baseVegetation = new Vegetation(ground, IslandVegetation, 500);
+                baseVegetation.Generate();
             }
 
         }

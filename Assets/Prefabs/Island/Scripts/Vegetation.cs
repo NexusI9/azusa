@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
+using Triangulation;
 
 namespace Island
 {
 
-    public enum BIOTYPE
+    public enum BIOTOP
     {
         CHAOS, //Jungle type, messes everywhere
         CENTRIC, 
@@ -32,25 +33,27 @@ namespace Island
 
         private Mesh Area;
         private VegetationItem[] Items;
+        private int TotalPoints;
         public float DistanceFromEdge = 1.0f;
         public int AreaVertices = 30;
 
-        public Vegetation(Mesh Ar, VegetationItem[] It)
+        public Vegetation(Mesh mesh, VegetationItem[] items, int totalPoints)
         {
-            Area = Ar;
-            Items = It;
+            Area = mesh;
+            Items = items;
+            TotalPoints = totalPoints;
 
             if(DistanceFromEdge > 0)
             {
-                ShrinkMesh();
+                Area = ShrinkMesh();
             }
         }
 
-        public VegetationItem[] Generate()
+        public VegetationItem[] Generate(BIOTOP biotop = BIOTOP.CHAOS)
         {
 
-
-
+            SpreadPoints spread = new SpreadPoints(Area, TotalPoints);
+            spread.Points();
 
             return Items;
         }
@@ -63,8 +66,10 @@ namespace Island
             meshUtils.DownSample(AreaVertices);
             meshUtils.Shrink(DistanceFromEdge);
 
+            //Lost triangulation while downsampling
+            Triangulator triangulator = new Triangulator(meshUtils.ToVector2(meshUtils.Mesh.vertices));
 
-            return meshUtils.Mesh;
+            return triangulator.mesh;
         }
     }
 
