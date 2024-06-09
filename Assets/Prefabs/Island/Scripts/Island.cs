@@ -16,6 +16,7 @@ namespace Island
         private List<Chunk> Chunks = new List<Chunk>();
         public Material GroundMaterial;
         public Material RockMaterial;
+        public int VegetationDensity = 1000;
 
         public List<GameObject> Vegetation;
         public List<GameObject> Grass;
@@ -67,7 +68,7 @@ namespace Island
 
             if (ground)
             {
-                Vegetation baseVegetation = new Vegetation(ground, IslandVegetation, 500);
+                Vegetation baseVegetation = new Vegetation(ground, IslandVegetation, VegetationDensity);
                 baseVegetation.Generate();
             }
 

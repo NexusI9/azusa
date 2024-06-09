@@ -43,6 +43,27 @@ namespace Utils {
         public int PointsNumber { get; private set; }
         private float AreaSum { get; set; }
         private List<Triangle> Triangles { get; set; } = new List<Triangle>();
+        public Vector3[] Points
+        {
+
+            get
+            {
+
+                AreaSum = CalculateAreaSum(Mesh.triangles);
+                List<Vector3> positions = new List<Vector3>();
+
+                for (int i = 0; i < PointsNumber; i++)
+                {
+                    Triangle triangle = RandomTriangle();
+                    Vector3 randomPoints = RandomWithinTriangle(triangle);
+                    positions.Add(randomPoints);
+                }
+
+
+                return positions.ToArray();
+            }
+
+        }
 
         public SpreadPoints(Mesh mesh, int pointNumbers)
         {
@@ -50,24 +71,6 @@ namespace Utils {
             PointsNumber = pointNumbers;
         }
 
-        public Vector3[] Points() {
-
-            AreaSum = CalculateAreaSum(Mesh.triangles);
-
-            for(int i = 0; i < PointsNumber; i++)
-            {
-                Triangle triangle = RandomTriangle();
-                Vector3 randomPoints = RandomWithinTriangle(triangle);
-                Debugger.Cube(new Cube()
-                {
-                    Position = randomPoints,
-                    Size = new Vector3(0.3f, 0.3f, 0.3f)
-                });
-            }
-
-           
-            return new Vector3[] { };
-        }
 
 
         private float TriangleArea(float[] triangle)

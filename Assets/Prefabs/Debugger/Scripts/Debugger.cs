@@ -7,21 +7,26 @@ using System;
 namespace Utils
 {
 
-    public class Label
+
+    public class BaseDebuggerObject
+    {
+        public Color Color { get; set; } = Color.green;
+    }
+
+    public class Label : BaseDebuggerObject
     {
         public string Text { get; set; }
         public Vector3 Position { get; set; }
     }
 
-    public class Polygon
+    public class Polygon : BaseDebuggerObject
     {
         public Vector3[] Points { get; set; }
         public bool Label { get; set; } = false;
         public bool Edges { get; set; } = true;
-        public Color Color { get; set; } = Color.green;
     }
 
-    public class Cube
+    public class Cube : BaseDebuggerObject
     {
         public Vector3 Position { get; set; }
         public Vector3 Size { get; set; }
@@ -75,7 +80,7 @@ namespace Utils
         private void DrawLabelGizmos(Label label)
         {
 #if UNITY_EDITOR
-            UnityEditor.Handles.color = Color.green;
+            UnityEditor.Handles.color = label.Color;
             UnityEditor.Handles.Label(label.Position, label.Text);
 #endif
         }
@@ -135,7 +140,8 @@ namespace Utils
 
             foreach(Cube cube in Cubes)
             {
-               Gizmos.DrawWireCube(cube.Position, cube.Size);
+                Gizmos.color = cube.Color;
+                Gizmos.DrawWireCube(cube.Position, cube.Size);
             }
 
 

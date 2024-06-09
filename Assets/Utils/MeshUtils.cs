@@ -13,16 +13,6 @@ namespace Utils {
     public class MeshUtils
     {
 
-
-        private static MeshUtils _instance;
-        public static MeshUtils Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
         public Mesh Mesh { get; private set; }
         private Mesh BaseMesh;
 
