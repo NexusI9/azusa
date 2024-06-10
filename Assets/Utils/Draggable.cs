@@ -8,16 +8,22 @@ public class Draggable : MonoBehaviour
      */
 
 
-    public string HitNameFilter = null;
+    public string HitNameFilter { get; set; } = null;
+    public GameObject Target { get; private set; } = null;
+
     private bool Hovered = false;
     private bool Hooked = false;
+
     private Vector3 Offset;
 
     private void Update()
     {
         GameObject hit = Raycaster.GetHitObject();
-        if (hit && (HitNameFilter != null && hit.name == HitNameFilter) )
+        if (hit
+            && (HitNameFilter != null && hit.name == HitNameFilter)
+           )
         {
+            Target = hit;
             if (!Hovered)
             {
                 OnHover();
@@ -26,15 +32,16 @@ public class Draggable : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0)) {
                 Hooked = true;
-                Offset = gameObject.transform.position - Raycaster.MouseWorldPosition();
+                Offset = Target.transform.parent.position - Raycaster.MouseWorldPosition();
             }
-            if (Input.GetMouseButtonUp(0)) Hooked = false;
+            if (Input.GetMouseButtonUp(0)) {
+                Hooked = false;
+            }
 
             if (Hooked) {
                 OnMove();
              }
             
-
         }
         else
         {
@@ -48,18 +55,19 @@ public class Draggable : MonoBehaviour
 
     public void OnMove()
     {
-        gameObject.transform.position = Raycaster.MouseWorldPosition() + Offset;
+        if(Target == null) { return;  }
+        Target.transform.parent.position = Raycaster.MouseWorldPosition() + Offset;
     }
 
 
     public void OnHover()
     {
-
+        if (Target == null) { return; }
     }
 
     public void OnOut()
     {
-
+        if (Target == null) { return; }
     }
 
 }

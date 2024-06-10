@@ -40,7 +40,8 @@ namespace Island
             gameObject.AddComponent<MeshFilter>();
 
             //Inheritance from Draggable
-            gameObject.GetComponent<Draggable>().HitNameFilter = CHUNK_COLLIDER_NAME;
+            Draggable draggable = gameObject.GetComponent<Draggable>();
+            draggable.HitNameFilter = CHUNK_COLLIDER_NAME;
 
             //Add Materials
             gameObject.GetComponent<MeshRenderer>().materials = new Material[] { GroundMaterial, RockMaterial, RockMaterial, RockMaterial };
