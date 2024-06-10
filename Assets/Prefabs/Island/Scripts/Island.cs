@@ -30,14 +30,17 @@ namespace Island
         public List<GameObject> Rock;
 
         //Mesh
-        public List<ChunkCollider> ChunkColliders= new List<ChunkCollider>();
+        public List<ChunkCollider> ChunkColliders = new List<ChunkCollider>();
+        private const string CHUNK_COLLIDER_NAME = "ChunkCollider";
         public Mesh Mesh { get; private set; }
 
         private void Start()
         {
-
-            gameObject.AddComponent<MeshFilter>();
             gameObject.AddComponent<MeshRenderer>();
+            gameObject.AddComponent<MeshFilter>();
+
+            //Inheritance from Draggable
+            gameObject.GetComponent<Draggable>().HitNameFilter = CHUNK_COLLIDER_NAME;
 
             //Add Materials
             gameObject.GetComponent<MeshRenderer>().materials = new Material[] { GroundMaterial, RockMaterial, RockMaterial, RockMaterial };
@@ -79,7 +82,6 @@ namespace Island
             return Mesh;
         }
 
-
         private void UpdateBounds()
         {
 
@@ -89,7 +91,7 @@ namespace Island
             //Add Collider as Children as Unity can by default only handle 1 collider / gameobjects
             foreach(ChunkCollider chunkCollider in ChunkColliders)
             { 
-                GameObject collider = new GameObject("ChunkCollider");
+                GameObject collider = new GameObject(CHUNK_COLLIDER_NAME);
                 collider.transform.parent = this.gameObject.transform;
                 collider.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(Vector3.zero) ) ;
                 BoxCollider boxCollider = collider.AddComponent<BoxCollider>();

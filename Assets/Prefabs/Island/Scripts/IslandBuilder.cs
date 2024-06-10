@@ -2,17 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IslandBuilder : MonoBehaviour
+
+namespace Island
 {
-    // Start is called before the first frame update
-    void Start()
+    public class IslandBuilder : MonoBehaviour
     {
-        
+
+        void Start()
+        {
+
+        }
+
+        void Update()
+        {
+
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
