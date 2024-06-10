@@ -12,6 +12,12 @@ namespace Island
 
     public class Island : MonoBehaviour
     {
+        public class ChunkCollider
+        {
+            public Chunk Chunk { get; set; }
+            public GameObject Collider { get; set; }
+        }
+
         //Materials
         public Material GroundMaterial;
         public Material RockMaterial;
@@ -24,7 +30,7 @@ namespace Island
         public List<GameObject> Rock;
 
         //Mesh
-        public List<Chunk> Chunks = new List<Chunk>();
+        public List<ChunkCollider> ChunkColliders= new List<ChunkCollider>();
         public Mesh Mesh { get; private set; }
 
         private void Start()
@@ -37,47 +43,61 @@ namespace Island
             gameObject.GetComponent<MeshRenderer>().materials = new Material[] { GroundMaterial, RockMaterial, RockMaterial, RockMaterial };
 
             Mesh = UpdateMesh();
+            UpdateBounds();
             gameObject.GetComponent<MeshFilter>().mesh = Mesh;
-            Mesh ground = Chunks[0].Circles.Where(c => c.name == "ground").First().mesh;
-            GenerateVegetation(ground);
-            
 
+            Mesh ground = ChunkColliders[0].Chunk.Circles.Where(c => c.name == "ground").First().mesh;
+            GenerateVegetation(ground); 
         }
 
         private Mesh UpdateMesh()
         {
-            return Chunks.Count == 0 ? BaseChunk() : MergeChunk();
-        }
 
-        private Mesh BaseChunk()
-        {
             //Generate Base Chunk
-            Chunk baseChunk = new Chunk();
-            Mesh chunkMesh = baseChunk.Mesh;
-
-            //Add to chunk cache list
-            Chunks.Add(baseChunk);
-
-            return chunkMesh;
-
-        }
-
-        
-        private Mesh MergeChunk()
-        {
-
-            //Edge case if only one chunk
-            if(Chunks.Count == 1)
+            if (ChunkColliders.Count == 0)
             {
-                return Chunks[0].Mesh;
+                Chunk baseChunk = new Chunk();
+                Mesh chunkMesh = baseChunk.Mesh;
+
+                //Add to chunk cache list
+                ChunkColliders.Add(new ChunkCollider() { Chunk = baseChunk });
+                return chunkMesh;
             }
 
-            foreach(Chunk chunk in Chunks)
+            //Assign Solo Chunk
+            if (ChunkColliders.Count == 1)
             {
-                
+                return ChunkColliders[0].Chunk.Mesh;
+            }
+
+            //Merge chunks
+            foreach (ChunkCollider chunkCollider in ChunkColliders)
+            {
+
             }
 
             return Mesh;
+        }
+
+
+        private void UpdateBounds()
+        {
+
+            //Purge
+
+
+            //Add Collider as Children as Unity can by default only handle 1 collider / gameobjects
+            foreach(ChunkCollider chunkCollider in ChunkColliders)
+            { 
+                GameObject collider = new GameObject("ChunkCollider");
+                collider.transform.parent = this.gameObject.transform;
+                collider.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(Vector3.zero) ) ;
+                BoxCollider boxCollider = collider.AddComponent<BoxCollider>();
+                boxCollider.center = chunkCollider.Chunk.Bounds.center;
+                boxCollider.size = chunkCollider.Chunk.Bounds.size;
+                
+                chunkCollider.Collider = collider;
+            }
         }
 
         private void GenerateVegetation(Mesh ground)

@@ -23,6 +23,7 @@ namespace Island
         public List<Vector3> vertices = new List<Vector3>();
         public List<Circle> Circles { get; private set; } = new List<Circle>();
         public List<BridgeLoop> BridgeLoops { get; private set; } = new List<BridgeLoop>();
+        public Bounds Bounds;
 
         public Mesh Mesh
         {
@@ -118,6 +119,8 @@ namespace Island
                 //Combine our chunk parts (Ground, Belt, Root...)
                 finalMesh.CombineMeshes(combine, false, false);
                 finalMesh.name = "chunk";
+
+                Bounds = finalMesh.bounds;
 
                 return finalMesh;
 

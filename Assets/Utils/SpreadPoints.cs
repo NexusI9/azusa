@@ -11,33 +11,36 @@ namespace Utils {
      * uniformely random points within this mesh
      * **/
 
-    public class Triangle
-    {
-        public int[] Vertices { get; set; }
-        public Vector3[] Points { get; set; }
-        public float Area { get; set; }
-        public int Index { get; set; }
-
-        public float[] Edges { get {
-
-                float[] edges = new float[Points.Length];
-
-                for(int i = 0; i < Points.Length; i++)
-                {
-                    Vector3 current = Points[i];
-                    Vector3 next = Points[(i+1)%Points.Length];
-                    edges[i] = Vector3.Distance(current, next);
-                }
-
-                return edges;
-            }
-
-            private set { }
-        }
-    }
-
     public class SpreadPoints
     {
+
+        public class Triangle
+        {
+            public int[] Vertices { get; set; }
+            public Vector3[] Points { get; set; }
+            public float Area { get; set; }
+            public int Index { get; set; }
+
+            public float[] Edges
+            {
+                get
+                {
+
+                    float[] edges = new float[Points.Length];
+
+                    for (int i = 0; i < Points.Length; i++)
+                    {
+                        Vector3 current = Points[i];
+                        Vector3 next = Points[(i + 1) % Points.Length];
+                        edges[i] = Vector3.Distance(current, next);
+                    }
+
+                    return edges;
+                }
+
+                private set { }
+            }
+        }
 
         public Mesh Mesh {get; private set;}
         public int PointsNumber { get; private set; }
