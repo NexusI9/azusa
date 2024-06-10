@@ -12,16 +12,20 @@ namespace Island
 
     public class Island : MonoBehaviour
     {
-
-        private List<Chunk> Chunks = new List<Chunk>();
+        //Materials
         public Material GroundMaterial;
         public Material RockMaterial;
-        public int VegetationDensity = 1000;
 
+        //Vegetation
+        public int VegetationDensity = 1000;
         public List<GameObject> Vegetation;
         public List<GameObject> Grass;
         public List<GameObject> Tree;
         public List<GameObject> Rock;
+
+        //Mesh
+        public List<Chunk> Chunks = new List<Chunk>();
+        public Mesh Mesh { get; private set; }
 
         private void Start()
         {
@@ -32,13 +36,54 @@ namespace Island
             //Add Materials
             gameObject.GetComponent<MeshRenderer>().materials = new Material[] { GroundMaterial, RockMaterial, RockMaterial, RockMaterial };
 
+            Mesh = UpdateMesh();
+            gameObject.GetComponent<MeshFilter>().mesh = Mesh;
+            Mesh ground = Chunks[0].Circles.Where(c => c.name == "ground").First().mesh;
+            GenerateVegetation(ground);
+            
 
+        }
+
+        private Mesh UpdateMesh()
+        {
+            return Chunks.Count == 0 ? BaseChunk() : MergeChunk();
+        }
+
+        private Mesh BaseChunk()
+        {
             //Generate Base Chunk
             Chunk baseChunk = new Chunk();
-            gameObject.GetComponent<MeshFilter>().mesh = baseChunk.Spawn(new Vector2(0, 0));
+            Mesh chunkMesh = baseChunk.Mesh;
+
+            //Add to chunk cache list
+            Chunks.Add(baseChunk);
+
+            return chunkMesh;
+
+        }
+
+        
+        private Mesh MergeChunk()
+        {
+
+            //Edge case if only one chunk
+            if(Chunks.Count == 1)
+            {
+                return Chunks[0].Mesh;
+            }
+
+            foreach(Chunk chunk in Chunks)
+            {
+                
+            }
+
+            return Mesh;
+        }
+
+        private void GenerateVegetation(Mesh ground)
+        {
 
             //Generate Vegetation
-            Mesh ground = baseChunk.Circles.Where(c => c.name == "ground").First().mesh;
 
             //Vegetation Config
             VegetationItem[] IslandVegetation = new VegetationItem[]
@@ -71,8 +116,8 @@ namespace Island
                 Vegetation baseVegetation = new Vegetation(ground, IslandVegetation, VegetationDensity);
                 baseVegetation.Generate();
             }
-
         }
+
 
     }
 

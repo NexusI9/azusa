@@ -20,105 +20,108 @@ namespace Island
 
         //Chunk depth
         public float Depth = 3;
-        public List<Vector3> mesh = new List<Vector3>();
+        public List<Vector3> vertices = new List<Vector3>();
         public List<Circle> Circles { get; private set; } = new List<Circle>();
         public List<BridgeLoop> BridgeLoops { get; private set; } = new List<BridgeLoop>();
 
-        public Mesh Spawn(Vector2 position)
+        public Mesh Mesh
         {
-
-            CombineInstance[] combine = new CombineInstance[4];
-            Mesh finalMesh = new Mesh();
-
-            List<Circle> circleConfig = new List<Circle>()
-        {
-            //1. Set Ground
-            new Circle(){
-                name = "ground",
-                segments = segments,
-                radius = radius,
-                Smooth = true,
-                SmoothThresholdAngle = 160
-            },
-
-            //2. Set Belt
-            new Circle()
-            {
-                name= "belt",
-                segments = (int) Mathf.Ceil(segments / 2),
-                radius = radius / 1.2f,
-                position = new Vector3(0, -1 * Depth, 0),
-                Smooth = false
-            },
-
-            //3. Set Root
-            new Circle()
-            {
-                name = "root",
-                segments = (int)Mathf.Ceil(segments / 3),
-                radius = radius / 2.5f,
-                position = new Vector3(0, -2 * Depth, 0),
-            }
-        };
-
-
-            //Loop through circles to make them spawn 
-            foreach (Circle circle in circleConfig)
+            get
             {
 
-                circle.Spawn();
+                CombineInstance[] combine = new CombineInstance[4];
+                Mesh finalMesh = new Mesh();
 
-                //add circle to global array
-                Circles.Add(circle);
-
-                //Add ground to combine instance
-                if (circle.name == "ground") combine[0].mesh = circle.mesh;
-                if (circle.name == "root")
+                List<Circle> circleConfig = new List<Circle>()
                 {
-                    //flip normal
-                    Normal normal = new Normal();
-                    Mesh flippedMesh = normal.Flip(circle.mesh);
-                    //noise up
-                    Vector3[] noiseVert = flippedMesh.vertices;
+                    //1. Set Ground
+                    new Circle(){
+                        name = "ground",
+                        segments = segments,
+                        radius = radius,
+                        Smooth = true,
+                        SmoothThresholdAngle = 160
+                    },
 
-                    for (int v = 0; v < noiseVert.Length; v++)
+                    //2. Set Belt
+                    new Circle()
                     {
-                        noiseVert[v].y -= Mathf.PerlinNoise(noiseVert[v].x * 0.6f, noiseVert[v].z * 0.6f) * 2;
-                        noiseVert[v].y += UnityEngine.Random.Range(-1f, 1f);
+                        name= "belt",
+                        segments = (int) Mathf.Ceil(segments / 2),
+                        radius = radius / 1.2f,
+                        position = new Vector3(0, -1 * Depth, 0),
+                        Smooth = false
+                    },
+
+                    //3. Set Root
+                    new Circle()
+                    {
+                        name = "root",
+                        segments = (int)Mathf.Ceil(segments / 3),
+                        radius = radius / 2.5f,
+                        position = new Vector3(0, -2 * Depth, 0),
                     }
-
-                    flippedMesh.vertices = noiseVert;
-                    combine[3].mesh = flippedMesh;
-                }
-
-            }
-
-            int circlesLength = Circles.Count;
-            //Bridge circles together
-            for (int i = 0; i < circlesLength - 1; i++)
-            {
-                Circle currentCircle = Circles[i];
-                Circle nextCircle = Circles[(i + 1) % circlesLength];
-
-                //Bridge Circles together
-                BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.mesh.vertices, nextCircle.mesh.vertices)
-                {
-                    DebugMode = false
                 };
 
-                BridgeLoops.Add(bridgeLoop);
 
-                //Add bridged mesh to combine
-                Mesh loop = bridgeLoop.Connect();
-                combine[i + 1].mesh = loop;
+                //Loop through circles to make them spawn 
+                foreach (Circle circle in circleConfig)
+                {
+
+                    circle.Spawn();
+
+                    //add circle to global array
+                    Circles.Add(circle);
+
+                    //Add ground to combine instance
+                    if (circle.name == "ground") combine[0].mesh = circle.mesh;
+                    if (circle.name == "root")
+                    {
+                        //flip normal
+                        Normal normal = new Normal();
+                        Mesh flippedMesh = normal.Flip(circle.mesh);
+                        //noise up
+                        Vector3[] noiseVert = flippedMesh.vertices;
+
+                        for (int v = 0; v < noiseVert.Length; v++)
+                        {
+                            noiseVert[v].y -= Mathf.PerlinNoise(noiseVert[v].x * 0.6f, noiseVert[v].z * 0.6f) * 2;
+                            noiseVert[v].y += UnityEngine.Random.Range(-1f, 1f);
+                        }
+
+                        flippedMesh.vertices = noiseVert;
+                        combine[3].mesh = flippedMesh;
+                    }
+
+                }
+
+                int circlesLength = Circles.Count;
+                //Bridge circles together
+                for (int i = 0; i < circlesLength - 1; i++)
+                {
+                    Circle currentCircle = Circles[i];
+                    Circle nextCircle = Circles[(i + 1) % circlesLength];
+
+                    //Bridge Circles together
+                    BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.mesh.vertices, nextCircle.mesh.vertices)
+                    {
+                        DebugMode = false
+                    };
+
+                    BridgeLoops.Add(bridgeLoop);
+
+                    //Add bridged mesh to combine
+                    Mesh loop = bridgeLoop.Connect();
+                    combine[i + 1].mesh = loop;
+                }
+
+                //Combine our chunk parts (Ground, Belt, Root...)
+                finalMesh.CombineMeshes(combine, false, false);
+                finalMesh.name = "chunk";
+
+                return finalMesh;
+
             }
-
-            //Combine our chunk parts (Ground, Belt, Root...)
-            finalMesh.CombineMeshes(combine, false, false);
-            finalMesh.name = "chunk";
-
-            return finalMesh;
-
         }
 
         private void SetMeshPosition(Mesh mesh, Vector3 position)
