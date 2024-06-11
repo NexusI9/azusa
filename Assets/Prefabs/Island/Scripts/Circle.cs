@@ -38,7 +38,9 @@ namespace Island
         public bool DebugMode { get; set; } = false;
         public bool Smooth { get; set; } = false;
         public int SmoothThresholdAngle { get; set; } = 110;
-        public Vector3[] Edges { get; private set; }
+        public Vector3[] OuterVertices { get; private set; }
+        public Vector3[] InnerVertices { get; private set; }
+        public float InnerCircle { get; set; } = 0.0f;
 
         public Mesh mesh { get; private set; }
 
@@ -56,7 +58,6 @@ namespace Island
             Triangulator triangulator = new Triangulator(points);
             mesh = triangulator.mesh;
 
-
             Uv uvs = new Uv();
             mesh.uv = uvs.Planar(mesh.vertices);
 
@@ -65,6 +66,9 @@ namespace Island
 
 
             SetPosition(position);
+            SetEdges(mesh);
+
+
             //mesh.normals = Normals(mesh.vertices);
             //mesh.uv = Uvs(mesh.vertices);
 
@@ -73,6 +77,32 @@ namespace Island
             {
                 DebugCircle();
             }
+
+        }
+
+        private void SetEdges(Mesh mesh)
+        {
+            List<Vector3> tempOut = new List<Vector3>();
+            List<Vector3> tempIn = new List<Vector3>();
+
+            //Basically split our edges counts in 2 to dispatche edges
+            if (InnerCircle > 0.0f)
+            {
+                int half = Mathf.FloorToInt(mesh.vertices.Length / 2);
+                for (int i = 0; i < mesh.vertices.Length; i++)
+                {
+                  (i <= half ? tempOut : tempIn).Add(mesh.vertices[i]);
+                }
+
+            }
+            else
+            {
+                tempOut = mesh.vertices.ToList();
+                tempIn = new List<Vector3>();
+            }
+
+            OuterVertices = tempOut.ToArray();
+            InnerVertices = tempIn.ToArray();
 
         }
 
@@ -152,7 +182,7 @@ namespace Island
         {
 
             //Setup initial points from which the delaunay triangulation will be calculated
-            Vector2[] pts = new Vector2[segments];
+            List<Vector2> pts = new List<Vector2>();
 
             float angleStep = 360.0f / segments;
             for (int i = 0; i < segments; i++)
@@ -168,7 +198,38 @@ namespace Island
                 float adjustedRadius = radius + noise;
                 adjustedRadius += Random.Range(-randomness, randomness);
 
-                pts[i] = new Vector2(x * adjustedRadius, z * adjustedRadius);
+                pts.Add(new Vector2(x * adjustedRadius, z * adjustedRadius));
+            }
+
+
+            
+            if (InnerCircle > 0.0f)
+            {
+                pts = AddShrinkCircle(pts);
+            }
+
+
+            return pts.ToArray();
+        }
+
+        private List<Vector2> AddShrinkCircle (List<Vector2> pts)
+        {
+            Mesh tempMesh = new Mesh();
+            Vector3[] vertices = new Vector3[pts.Count];
+            for (int i = 0; i < pts.Count; i++)
+            {
+                vertices[i] = new Vector3(pts[i].x, 0, pts[i].y);
+            }
+
+            tempMesh.vertices = vertices;
+
+            MeshUtils meshUtils = new MeshUtils(tempMesh);
+            meshUtils.Shrink(InnerCircle);
+
+            for (int i = 0; i < meshUtils.Mesh.vertices.Length; i++)
+            {
+                Vector3 currentVert = meshUtils.Mesh.vertices[i];
+                pts.Add(new Vector2(currentVert.x, currentVert.z));
             }
 
             return pts;

@@ -42,8 +42,8 @@ namespace Island
                         segments = segments,
                         radius = radius,
                         Smooth = true,
-                        SmoothThresholdAngle = 160
-                
+                        SmoothThresholdAngle = 160,
+                        InnerCircle = 3.0f
                     },
 
                     //2. Set Belt
@@ -81,15 +81,19 @@ namespace Island
                     {
 
                         Color[] vertexColor = new Color[circle.mesh.vertices.Length];
-
                         for (int i = 0; i < circle.mesh.vertices.Length; i++)
                         {
                             vertexColor[i] = Color.white;
                         }
 
                         circle.mesh.colors = vertexColor;
-
                         combine[0].mesh = circle.mesh;
+
+                        Debugger.Polygon(new Polygon()
+                        {
+                            Points = circle.InnerVertices
+                        });
+
                     }
                     if (circle.name == "root")
                     {
@@ -119,7 +123,7 @@ namespace Island
                     Circle nextCircle = Circles[(i + 1) % circlesLength];
 
                     //Bridge Circles together
-                    BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.mesh.vertices, nextCircle.mesh.vertices)
+                    BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.OuterVertices, nextCircle.OuterVertices)
                     {
                         DebugMode = false
                     };

@@ -19,7 +19,7 @@ namespace Utils {
         public MeshUtils(Mesh mesh)
         {
             BaseMesh = mesh;
-            Mesh = new Mesh();
+            Mesh = mesh;
         }
 
 
@@ -58,8 +58,24 @@ namespace Utils {
 
         }
 
+        public Vector3[] ToVector3(Vector2[] vertices, float y = 0.0f)
+        {
+
+            List<Vector3> vectors = new List<Vector3>();
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                Vector2 currVert = vertices[i];
+                vectors.Add(new Vector3(currVert.x, y, currVert.y));
+            }
+
+            return vectors.ToArray();
+
+        }
+
         public Mesh Shrink(float distance)
         {
+            
             List<Vector3> vertices = new List<Vector3>();
 
             //Get bisect axes and shrink down mesh
