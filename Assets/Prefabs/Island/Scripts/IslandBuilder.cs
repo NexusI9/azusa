@@ -8,14 +8,29 @@ namespace Island
     public class IslandBuilder : MonoBehaviour
     {
 
-        void Start()
+        private List<GameObject> Islands = new List<GameObject>();
+        public GameObject Island;
+
+        private void Start()
         {
+
 
         }
 
-        void Update()
+        private void Update()
         {
 
+            if (Input.GetKeyUp(KeyCode.P))
+            {
+                SpawnIsland();
+            }
+
+        }
+
+
+        private void SpawnIsland() {
+            GameObject island = Instantiate(Island, gameObject.transform);
+            Islands.Add(island);
         }
     }
 

@@ -32,6 +32,18 @@ namespace Utils
         public Vector3 Size { get; set; }
     }
 
+    public class Button
+    {
+        public string Label { get; set; }
+        public Event Action { get; set; }
+    }
+
+    public class Tab
+    {
+        public string Label { get; set; }
+        public List<string> Data { get; set; }
+        public List<Button> Buttons { get; set; }
+    }
 
 
     public class Debugger : MonoBehaviour
@@ -49,10 +61,30 @@ namespace Utils
         private static List<Polygon> Polygons = new List<Polygon>();
         private static List<Label> Labels = new List<Label>();
         private static List<Cube> Cubes = new List<Cube>();
+        private static List<Tab> Tabs = new List<Tab>();
+
+        private static Canvas Canvas;
 
         private void Awake()
         {
             _instance = this;
+        }
+
+        public void Start()
+        {
+            Canvas = GetComponentInChildren<Canvas>();
+            GenerateTabs();
+        }
+
+        private void GenerateTabs()
+        {
+            foreach(Tab tab in Tabs)
+            {
+                foreach(Button button in tab.Buttons)
+                {
+
+                }
+            }
         }
 
         public static void Polygon(Polygon points)
