@@ -38,6 +38,7 @@ namespace Island
         public bool DebugMode { get; set; } = false;
         public bool Smooth { get; set; } = false;
         public int SmoothThresholdAngle { get; set; } = 110;
+        public Vector3[] Edges { get; private set; }
 
         public Mesh mesh { get; private set; }
 

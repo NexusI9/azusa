@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Utils;
+using System.Linq;
 
 /*
  Chunks are the independant component of an island.
@@ -42,6 +43,7 @@ namespace Island
                         radius = radius,
                         Smooth = true,
                         SmoothThresholdAngle = 160
+                
                     },
 
                     //2. Set Belt
@@ -75,7 +77,20 @@ namespace Island
                     Circles.Add(circle);
 
                     //Add ground to combine instance
-                    if (circle.name == "ground") combine[0].mesh = circle.mesh;
+                    if (circle.name == "ground")
+                    {
+
+                        Color[] vertexColor = new Color[circle.mesh.vertices.Length];
+
+                        for (int i = 0; i < circle.mesh.vertices.Length; i++)
+                        {
+                            vertexColor[i] = Color.white;
+                        }
+
+                        circle.mesh.colors = vertexColor;
+
+                        combine[0].mesh = circle.mesh;
+                    }
                     if (circle.name == "root")
                     {
                         //flip normal
