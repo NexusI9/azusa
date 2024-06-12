@@ -38,9 +38,11 @@ namespace Island
         public bool DebugMode { get; set; } = false;
         public bool Smooth { get; set; } = false;
         public int SmoothThresholdAngle { get; set; } = 110;
+
         public Vector3[] OuterVertices { get; private set; }
         public Vector3[] InnerVertices { get; private set; }
-        public float InnerCircle { get; set; } = 0.0f;
+
+        public float[] InnerCircles { get; set; } = new float[] { };
 
         public Mesh mesh { get; private set; }
 
@@ -55,6 +57,13 @@ namespace Island
             }
 
 
+            //Generate Inner circles
+            foreach(float distance in InnerCircles.ToList())
+            {
+                ShrinkCircles(points, distance);
+            }
+
+            
             Triangulator triangulator = new Triangulator(points);
             mesh = triangulator.mesh;
 
@@ -86,12 +95,11 @@ namespace Island
             List<Vector3> tempIn = new List<Vector3>();
 
             //Basically split our edges counts in 2 to dispatche edges
-            if (InnerCircle > 0.0f)
+            if (InnerCircles.Length > 0f)
             {
-                int half = Mathf.FloorToInt(mesh.vertices.Length / 2);
                 for (int i = 0; i < mesh.vertices.Length; i++)
                 {
-                  (i <= half ? tempOut : tempIn).Add(mesh.vertices[i]);
+                  (i <= Mathf.FloorToInt(mesh.vertices.Length / 2) ? tempOut : tempIn).Add(mesh.vertices[i]);
                 }
 
             }
@@ -201,38 +209,30 @@ namespace Island
                 pts.Add(new Vector2(x * adjustedRadius, z * adjustedRadius));
             }
 
-
-            
-            if (InnerCircle > 0.0f)
-            {
-                pts = AddShrinkCircle(pts);
-            }
-
-
             return pts.ToArray();
         }
 
-        private List<Vector2> AddShrinkCircle (List<Vector2> pts)
+        private List<Vector2> ShrinkCircles (Vector2[] pts, float distance)
         {
+            List<Vector2> listPts = pts.ToList();
             Mesh tempMesh = new Mesh();
-            Vector3[] vertices = new Vector3[pts.Count];
-            for (int i = 0; i < pts.Count; i++)
+            Vector3[] vertices = new Vector3[listPts.Count];
+            for (int i = 0; i < listPts.Count; i++)
             {
                 vertices[i] = new Vector3(pts[i].x, 0, pts[i].y);
             }
 
             tempMesh.vertices = vertices;
 
-            MeshUtils meshUtils = new MeshUtils(tempMesh);
-            meshUtils.Shrink(InnerCircle);
+            Mesh shrinkMesh = MeshUtils.Shrink(tempMesh, distance);
 
-            for (int i = 0; i < meshUtils.Mesh.vertices.Length; i++)
+            for (int i = 0; i < shrinkMesh.vertices.Length; i++)
             {
-                Vector3 currentVert = meshUtils.Mesh.vertices[i];
-                pts.Add(new Vector2(currentVert.x, currentVert.z));
+                Vector3 currentVert = shrinkMesh.vertices[i];
+                listPts.Add(new Vector2(currentVert.x, currentVert.z));
             }
 
-            return pts;
+            return listPts;
         }
 
 

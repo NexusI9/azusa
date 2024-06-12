@@ -10,40 +10,30 @@ namespace Utils {
     /*
      *Basic utilities for Mesh manipulation (modifiers)
      */
-    public class MeshUtils
+    public static class MeshUtils
     {
 
-        public Mesh Mesh { get; private set; }
-        private Mesh BaseMesh;
-
-        public MeshUtils(Mesh mesh)
-        {
-            BaseMesh = mesh;
-            Mesh = mesh;
-        }
-
-
-
-        public Mesh DownSample(int max)
+        public static Mesh DownSample(Mesh mesh, int max)
         {
 
-            if (BaseMesh.vertices.Length > max)
+            Mesh tempMesh = new Mesh();
+
+            if (mesh.vertices.Length > max)
             {
                 List<Vector3> vertices = new List<Vector3>();
 
-                for (int i = 0; i < BaseMesh.vertices.Length; i += Mathf.CeilToInt(BaseMesh.vertices.Length / max))
+                for (int i = 0; i < mesh.vertices.Length; i += Mathf.CeilToInt(mesh.vertices.Length / max))
                 {
-                    vertices.Add(BaseMesh.vertices[i]);
+                    vertices.Add(mesh.vertices[i]);
                 }
 
-                Mesh.vertices = vertices.ToArray();
+                tempMesh.vertices = vertices.ToArray();
             }
 
-            BaseMesh = Mesh;
-            return Mesh;
+            return tempMesh;
         }
 
-        public Vector2[] ToVector2(Vector3[] vertices)
+        public static Vector2[] ToVector2(Vector3[] vertices)
         {
 
             List<Vector2> vectors = new List<Vector2>();
@@ -58,7 +48,7 @@ namespace Utils {
 
         }
 
-        public Vector3[] ToVector3(Vector2[] vertices, float y = 0.0f)
+        public static Vector3[] ToVector3(Vector2[] vertices, float y = 0.0f)
         {
 
             List<Vector3> vectors = new List<Vector3>();
@@ -73,17 +63,17 @@ namespace Utils {
 
         }
 
-        public Mesh Shrink(float distance)
+        public static Mesh Shrink(Mesh mesh, float distance)
         {
             
             List<Vector3> vertices = new List<Vector3>();
 
             //Get bisect axes and shrink down mesh
-            for (int i = 0; i < Mesh.vertices.Length; i++)
+            for (int i = 0; i < mesh.vertices.Length; i++)
             {
-                Vector3 A = Mesh.vertices[i == 0 ? Mesh.vertices.Length - 1 : i - 1];
-                Vector3 B = Mesh.vertices[i];
-                Vector3 C = Mesh.vertices[(i + 1) % Mesh.vertices.Length];
+                Vector3 A = mesh.vertices[i == 0 ? mesh.vertices.Length - 1 : i - 1];
+                Vector3 B = mesh.vertices[i];
+                Vector3 C = mesh.vertices[(i + 1) % mesh.vertices.Length];
 
                 Vector3 AB = B - A;
                 Vector3 BC = C - B;
@@ -96,21 +86,20 @@ namespace Utils {
             }
 
 
-            Mesh.vertices = vertices.ToArray();
+            mesh.vertices = vertices.ToArray();
 
-            BaseMesh = Mesh;
-            return Mesh;
+            return mesh;
 
         }
 
 
-        public Bounds BoundingBox()
+        public static Bounds BoundingBox(Mesh mesh)
         {
             float minX = float.MaxValue, minY = float.MaxValue;
             float maxX = float.MinValue, maxY = float.MinValue;
 
 
-            foreach (Vector3 vertex in BaseMesh.vertices)
+            foreach (Vector3 vertex in mesh.vertices)
             {
                 minX = Mathf.Min(minX, vertex.x);
                 minY = Mathf.Min(minY, vertex.y);

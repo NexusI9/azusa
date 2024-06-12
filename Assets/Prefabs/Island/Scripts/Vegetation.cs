@@ -117,12 +117,11 @@ namespace Island
         {
 
             //Downsample and simplify shape
-            MeshUtils meshUtils = new MeshUtils(Area);
-            meshUtils.DownSample(AreaVertices);
-            meshUtils.Shrink(DistanceFromEdge);
+            Mesh shrinkMesh = MeshUtils.DownSample(Area, AreaVertices);
+            shrinkMesh = MeshUtils.Shrink(shrinkMesh, DistanceFromEdge);
 
             //Lost triangulation while downsampling
-            Triangulator triangulator = new Triangulator(meshUtils.ToVector2(meshUtils.Mesh.vertices));
+            Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(shrinkMesh.vertices));
 
             return triangulator.mesh;
         }
