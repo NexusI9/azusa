@@ -290,14 +290,31 @@ namespace Island
         public void SetPosition(Vector3 position)
         {
 
+            //Update Mesh Vertices
             Vector3[] tempVert = mesh.vertices;
             for (int i = 0; i < mesh.vertices.Length; i++)
             {
-                tempVert[i] = tempVert[i] + position;
+                tempVert[i] += position;
             }
 
             mesh.vertices = tempVert;
             mesh.RecalculateBounds();
+
+            //Update OuterVertices
+            for (int i = 0; i < OuterVertices.Length; i++)
+            {
+                OuterVertices[i] += position;
+            }
+
+            //Update InnerVertices
+            for (int i = 0; i < InnerVertices.Length; i++)
+            {
+                for(int v = 0; v < InnerVertices[i].Length; v++)
+                {
+                    InnerVertices[i][v] += position;
+                }
+            }
+
         }
     }
 
