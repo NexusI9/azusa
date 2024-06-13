@@ -39,8 +39,8 @@ namespace Island
         public bool Smooth { get; set; } = false;
         public int SmoothThresholdAngle { get; set; } = 110;
 
-        public Vector3[] OuterVertices { get; private set; }
-        public Vector3[] InnerVertices { get; private set; }
+        public Vector3[] OuterVertices { get; private set; } = new Vector3[] { };
+        public Vector3[][] InnerVertices { get; private set; } = new Vector3[][] { };
 
         public float[] InnerCircles { get; set; } = new float[] { };
 
@@ -49,23 +49,27 @@ namespace Island
         public void Spawn()
         {
 
+            //Generate Outer Ring
             Vector2[] points = Points();
+            if (Smooth) points = SmoothPeak(points, SmoothThresholdAngle);
 
-            if (Smooth)
+            OuterVertices = MeshUtils.ToVector3(points);
+
+            //Generate Inner Ring
+            if (InnerCircles.Length > 0)
             {
-                points = SmoothPeak(points, SmoothThresholdAngle);
+                List<Vector3[]> inners = new List<Vector3[]>();
+                for (int i = 0; i < InnerCircles.Length; i++)
+                {
+                    Vector2[] shrinkCircle = GenerateShrinkCircles(points, InnerCircles[i]);
+                    //Adding Inner ring to global array
+                    inners.Add(MeshUtils.ToVector3(shrinkCircle));
+                }
+                InnerVertices = inners.ToArray();
             }
 
-
-            //Generate Inner circles
-            foreach(float distance in InnerCircles.ToList())
-            {
-                ShrinkCircles(points, distance);
-            }
-
-            
-            Triangulator triangulator = new Triangulator(points);
-            mesh = triangulator.mesh;
+            mesh = new Mesh();
+            mesh = CombineRings();
 
             Uv uvs = new Uv();
             mesh.uv = uvs.Planar(mesh.vertices);
@@ -73,10 +77,7 @@ namespace Island
             Normal normals = new Normal();
             mesh.normals = normals.Set(mesh);
 
-
             SetPosition(position);
-            SetEdges(mesh);
-
 
             //mesh.normals = Normals(mesh.vertices);
             //mesh.uv = Uvs(mesh.vertices);
@@ -89,31 +90,55 @@ namespace Island
 
         }
 
-        private void SetEdges(Mesh mesh)
+        private Mesh CombineRings()
         {
-            List<Vector3> tempOut = new List<Vector3>();
-            List<Vector3> tempIn = new List<Vector3>();
 
-            //Basically split our edges counts in 2 to dispatche edges
-            if (InnerCircles.Length > 0f)
+            if(InnerVertices.Length > 0)
             {
-                for (int i = 0; i < mesh.vertices.Length; i++)
+
+                //Generate triangulation from concating outer (n) + inner (n+1) vertices
+                List<Vector3[]> outerInner = new List<Vector3[]>();
+                outerInner.Add(OuterVertices);
+                for(int i = 0; i < InnerVertices.Length; i++)
                 {
-                  (i <= Mathf.FloorToInt(mesh.vertices.Length / 2) ? tempOut : tempIn).Add(mesh.vertices[i]);
+                   outerInner.Add(InnerVertices[i]);
                 }
 
+                CombineInstance[] combine = new CombineInstance[outerInner.Count];
+
+                for (int i = 0; i < outerInner.Count; i++)
+                {
+
+                    Vector3[] currentRing = outerInner[i];
+                    List<Vector3> concat = new List<Vector3>();
+                    concat = concat.Concat(currentRing).ToList();
+
+                    if (i < outerInner.Count-1)
+                    {
+                        Vector3[] nextRing = outerInner[i + 1];
+                        //Concat vertices
+                        concat = concat.Concat(nextRing).ToList();
+
+                    }
+
+
+                    Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(concat.ToArray()));
+                    combine[i].mesh = triangulator.mesh;
+
+                }
+
+                Mesh combinedMesh = new Mesh();
+                combinedMesh.CombineMeshes(combine, true, false);
+
+                return combinedMesh;
             }
             else
             {
-                tempOut = mesh.vertices.ToList();
-                tempIn = new List<Vector3>();
+                //Generate first triangulation
+                Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(OuterVertices));
+                return triangulator.mesh;
             }
-
-            OuterVertices = tempOut.ToArray();
-            InnerVertices = tempIn.ToArray();
-
         }
-
 
         private Vector2[] SmoothPeak(Vector2[] points, float threshold)
         {
@@ -209,30 +234,23 @@ namespace Island
                 pts.Add(new Vector2(x * adjustedRadius, z * adjustedRadius));
             }
 
+
             return pts.ToArray();
         }
 
-        private List<Vector2> ShrinkCircles (Vector2[] pts, float distance)
+        private Vector2[] GenerateShrinkCircles (Vector2[] pts, float distance)
         {
+
             List<Vector2> listPts = pts.ToList();
             Mesh tempMesh = new Mesh();
-            Vector3[] vertices = new Vector3[listPts.Count];
-            for (int i = 0; i < listPts.Count; i++)
-            {
-                vertices[i] = new Vector3(pts[i].x, 0, pts[i].y);
-            }
+            Vector3[] vertices = MeshUtils.ToVector3(pts);
 
             tempMesh.vertices = vertices;
 
             Mesh shrinkMesh = MeshUtils.Shrink(tempMesh, distance);
 
-            for (int i = 0; i < shrinkMesh.vertices.Length; i++)
-            {
-                Vector3 currentVert = shrinkMesh.vertices[i];
-                listPts.Add(new Vector2(currentVert.x, currentVert.z));
-            }
+            return MeshUtils.ToVector2(shrinkMesh.vertices);
 
-            return listPts;
         }
 
 

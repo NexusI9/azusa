@@ -88,12 +88,6 @@ namespace Island
 
                         circle.mesh.colors = vertexColor;
                         combine[0].mesh = circle.mesh;
-
-                        Debugger.Polygon(new Polygon()
-                        {
-                            Points = circle.InnerVertices
-                        });
-
                     }
                     if (circle.name == "root")
                     {
