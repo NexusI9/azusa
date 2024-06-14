@@ -122,19 +122,8 @@ namespace Island
                     }
 
 
-                    Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(concat.ToArray()));
-                    combine[i].mesh = triangulator.mesh;
-
-                    for (int a = 0; a < triangulator.triangles.Length; a+=3)
-                    {
-                        int t1 = triangulator.triangles[a];
-                        int t2 = triangulator.triangles[a+1];
-                        int t3 = triangulator.triangles[a+2];
-                        if( t1 == 0 || t2 == 0 || t3 == 0)
-                        {
-                            Debug.Log($"{t1}, {t2}, {t3}");
-                        }
-                    }
+                    Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(concat.ToArray()), MeshUtils.ToVector2(OuterVertices));
+                    combine[i].mesh = triangulator.Mesh;
 
                 }
 
@@ -148,7 +137,7 @@ namespace Island
             {
                 //Generate first triangulation
                 Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(OuterVertices));
-                return triangulator.mesh;
+                return triangulator.Mesh;
             }
         }
 

@@ -12,35 +12,45 @@ namespace Triangulation
 
     public class Triangulator {
 
+        private enum CleanTriangleMethod
+        {
+            RAYCAST,
+            HULL
+        };
 
-        public Mesh mesh { get; private set; }
-        public Vector3[] vertices { get; private set; }
-        public int[] triangles { get; private set; }
 
-        private Vector2[] points { get; set; }
-        public Delaunator delaunator { get; set; }
+        public Mesh Mesh { get; private set; }
+        public Vector3[] Vertices { get; private set; }
+        public int[] Triangles { get; private set; }
 
-        public Triangulator (Vector2[] initPoints) {
+        private Vector2[] Points { get; set; }
+        public Delaunator Delaunator { get; set; }
 
-            IPoint[] pts = Points(initPoints);
-            points = initPoints;
+        private Vector2[] OuterEdges { get; set; }
 
-            delaunator = new Delaunator(pts);
+        public Triangulator(Vector2[] initPoints, Vector2[] outerEdges = null) {
 
-            mesh = new Mesh();
-            mesh.vertices = Vertices();
-            mesh.triangles = delaunator.Triangles;
-            
-            vertices = mesh.vertices;
-            triangles = mesh.triangles;
-            
+            OuterEdges = outerEdges == null ? initPoints : outerEdges;
+
+            IPoint[] pts = GeneratePoints(initPoints);
+            Points = initPoints;
+
+            Delaunator = new Delaunator(pts);
+
+            Mesh = new Mesh();
+            Mesh.vertices = GenerateVertices();
+            Mesh.triangles = GenerateTriangles(CleanTriangleMethod.RAYCAST);
+
+            Vertices = Mesh.vertices;
+            Triangles = Mesh.triangles;
+
         }
 
-        private IPoint[] Points(Vector2[] points)
+        private IPoint[] GeneratePoints(Vector2[] points)
         {
             List<IPoint> pts = new List<IPoint>();
 
-            for(int i = 0; i < points.Length; i++)
+            for (int i = 0; i < points.Length; i++)
             {
                 Vector2 point = points[i];
                 pts.Add(new DelaunatorSharp.Point() { X = point.x, Y = point.y });
@@ -50,12 +60,12 @@ namespace Triangulation
         }
 
 
-        private Vector3[] Vertices()
+        private Vector3[] GenerateVertices()
         {
 
             List<Vector3> vert = new List<Vector3>();
 
-            foreach (IPoint pt in delaunator.Points)
+            foreach (IPoint pt in Delaunator.Points)
             {
                 //Get points stored in triangles
                 vert.Add(new Vector3((float)pt.X, 0, (float)pt.Y));
@@ -66,58 +76,99 @@ namespace Triangulation
 
 
 
-        private int[] Triangles()
+        private int[] GenerateTriangles(CleanTriangleMethod method)
         {
-            return CleanTrianglesIndex(delaunator.GetTriangles());
+            return method == CleanTriangleMethod.RAYCAST ? CleanTrianglesRaycast(Delaunator.GetTriangles()) : CleanTrianglesHull(Delaunator.GetTriangles());
         }
 
-        private int[] CleanTrianglesIndex(IEnumerable<ITriangle> triangles)
+        private int[] CleanTrianglesRaycast(IEnumerable<ITriangle> triangles)
         {
 
             List<int> cleanTri = new List<int>();
 
             foreach (ITriangle tri in triangles)
             {
- 
-                //Get centroid Point coordinate of triangle
-                IPoint centroid = delaunator.GetCentroid(tri.Index);
 
-                Debugger.Cube(new Cube()
-                {
-                    Position = new Vector3((float)centroid.X, 0, (float)centroid.Y),
-                    Size = new Vector3(0.3f, 0.3f, 0.3f)
-                }) ;
-  
+                //Get centroid Point coordinate of triangle
+                IPoint centroid = Delaunator.GetCentroid(tri.Index);
+
                 //Go through each points of our initial shape and check the intersection number via raycasting vector
                 int nIntersection = 0;
-                for (int pt = 0; pt < points.Length; pt++)
+                for (int pt = 0; pt < OuterEdges.Length; pt++)
                 {
-                    
+
                     //Get current and new point to define our vector
-                    Vector2 currentPoint = points[pt];
-                    Vector2 nextPoint = points[(pt + 1) % points.Length];
+                    Vector2 currentPoint = OuterEdges[pt];
+                    Vector2 nextPoint = OuterEdges[(pt + 1) % OuterEdges.Length];
 
                     //Convert vector to point
-                    DelaunatorSharp.Point sideStart = new () { X = currentPoint.x, Y = currentPoint.y };
-                    DelaunatorSharp.Point sideEnd = new () { X = nextPoint.x, Y = nextPoint.y };
+                    DelaunatorSharp.Point sideStart = new() { X = currentPoint.x, Y = currentPoint.y };
+                    DelaunatorSharp.Point sideEnd = new() { X = nextPoint.x, Y = nextPoint.y };
 
                     //Check if centroid is in or out via raycasting
                     if (IsIntersecting(centroid, sideStart, sideEnd)) nIntersection++;
                 }
-      
+
                 if ((nIntersection & 1) == 1)
                 {
 
                     //Inside, append triangle indexes
-                    foreach ( int index in delaunator.PointsOfTriangle(tri.Index) ){
+                    foreach (int index in Delaunator.PointsOfTriangle(tri.Index)) {
                         cleanTri.Add(index);
                     }
-   
+
                 }
-                
+
             }
 
             return cleanTri.ToArray();
+        }
+
+        private int[] CleanTrianglesHull(IEnumerable<ITriangle> triangles)
+        {
+            List<int> cleanTri = new List<int>();
+
+            foreach (ITriangle tri in triangles)
+            {
+                if(BelongToHull(tri.Points, Delaunator.GetHullPoints()) == false)
+                {
+                    //Inside, append triangle indexes
+                    foreach (int index in Delaunator.PointsOfTriangle(tri.Index))
+                    {
+                        cleanTri.Add(index);
+                    }
+                }
+            }
+
+            return cleanTri.ToArray();
+        }
+
+        private bool BelongToHull(IEnumerable<IPoint> points, IPoint[] hull)
+        {
+            /*
+             * Detect if at least two points belongs to Hull
+             * If belongs to hull then it means it's out of the shape
+             */
+
+
+            int commonPoints = 0;
+
+            foreach (IPoint point in points)
+            {
+                for(int i = 0; i < hull.Length; i++)
+                {
+                    IPoint currentHullPoint = hull[i];
+
+                    if( point.X == currentHullPoint.X && point.Y == currentHullPoint.Y)
+                    {
+                        commonPoints++;
+                    }
+
+                }
+
+            }
+
+            return commonPoints >= 2;
         }
 
         private bool IsIntersecting(IPoint point, IPoint sideStart, IPoint sideEnd)

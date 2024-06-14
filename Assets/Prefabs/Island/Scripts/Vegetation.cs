@@ -123,7 +123,7 @@ namespace Island
             //Lost triangulation while downsampling
             Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(shrinkMesh.vertices));
 
-            return triangulator.mesh;
+            return triangulator.Mesh;
         }
     }
 
