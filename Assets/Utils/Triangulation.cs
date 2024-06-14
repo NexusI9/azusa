@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using DelaunatorSharp;
+using Utils;
 
 /*
  Execute a Delaunay Triangulation
@@ -28,7 +29,7 @@ namespace Triangulation
 
             mesh = new Mesh();
             mesh.vertices = Vertices();
-            mesh.triangles = Triangles();
+            mesh.triangles = delaunator.Triangles;
             
             vertices = mesh.vertices;
             triangles = mesh.triangles;
@@ -42,7 +43,7 @@ namespace Triangulation
             for(int i = 0; i < points.Length; i++)
             {
                 Vector2 point = points[i];
-                pts.Add(new Point() { X = point.x, Y = point.y });
+                pts.Add(new DelaunatorSharp.Point() { X = point.x, Y = point.y });
             }
 
             return pts.ToArray();
@@ -81,6 +82,12 @@ namespace Triangulation
                 //Get centroid Point coordinate of triangle
                 IPoint centroid = delaunator.GetCentroid(tri.Index);
 
+                Debugger.Cube(new Cube()
+                {
+                    Position = new Vector3((float)centroid.X, 0, (float)centroid.Y),
+                    Size = new Vector3(0.3f, 0.3f, 0.3f)
+                }) ;
+  
                 //Go through each points of our initial shape and check the intersection number via raycasting vector
                 int nIntersection = 0;
                 for (int pt = 0; pt < points.Length; pt++)
@@ -91,12 +98,11 @@ namespace Triangulation
                     Vector2 nextPoint = points[(pt + 1) % points.Length];
 
                     //Convert vector to point
-                    Point sideStart = new Point() { X = currentPoint.x, Y = currentPoint.y };
-                    Point sideEnd = new Point() { X = nextPoint.x, Y = nextPoint.y };
+                    DelaunatorSharp.Point sideStart = new () { X = currentPoint.x, Y = currentPoint.y };
+                    DelaunatorSharp.Point sideEnd = new () { X = nextPoint.x, Y = nextPoint.y };
 
                     //Check if centroid is in or out via raycasting
                     if (IsIntersecting(centroid, sideStart, sideEnd)) nIntersection++;
-                    
                 }
       
                 if ((nIntersection & 1) == 1)

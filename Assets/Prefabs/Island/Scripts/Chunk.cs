@@ -43,7 +43,7 @@ namespace Island
                         radius = radius,
                         Smooth = true,
                         SmoothThresholdAngle = 160,
-                        InnerCircles = new float[] { 3.0f }
+                        InnerCircles = new float[] { 1.0f },
                     },
 
                     //2. Set Belt

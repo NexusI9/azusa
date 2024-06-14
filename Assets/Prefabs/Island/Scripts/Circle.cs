@@ -44,7 +44,7 @@ namespace Island
 
         public float[] InnerCircles { get; set; } = new float[] { };
 
-        public Mesh mesh { get; private set; }
+        public Mesh mesh { get; private set; } = new Mesh();
 
         public void Spawn()
         {
@@ -68,7 +68,7 @@ namespace Island
                 InnerVertices = inners.ToArray();
             }
 
-            mesh = new Mesh();
+      
             mesh = CombineRings();
 
             Uv uvs = new Uv();
@@ -106,7 +106,7 @@ namespace Island
 
                 CombineInstance[] combine = new CombineInstance[outerInner.Count];
 
-                for (int i = 0; i < outerInner.Count; i++)
+                for (int i = 0; i < outerInner.Count-1; i++)
                 {
 
                     Vector3[] currentRing = outerInner[i];
@@ -125,12 +125,24 @@ namespace Island
                     Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(concat.ToArray()));
                     combine[i].mesh = triangulator.mesh;
 
+                    for (int a = 0; a < triangulator.triangles.Length; a+=3)
+                    {
+                        int t1 = triangulator.triangles[a];
+                        int t2 = triangulator.triangles[a+1];
+                        int t3 = triangulator.triangles[a+2];
+                        if( t1 == 0 || t2 == 0 || t3 == 0)
+                        {
+                            Debug.Log($"{t1}, {t2}, {t3}");
+                        }
+                    }
+
                 }
 
                 Mesh combinedMesh = new Mesh();
                 combinedMesh.CombineMeshes(combine, true, false);
 
-                return combinedMesh;
+
+                    return combinedMesh;
             }
             else
             {
