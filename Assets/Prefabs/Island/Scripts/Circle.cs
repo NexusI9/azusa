@@ -93,53 +93,18 @@ namespace Island
         private Mesh CombineRings()
         {
 
-            if(InnerVertices.Length > 0)
+            //Generate triangulation from concating outer + inner vertices
+            List<Vector3> outerInner = new List<Vector3>();
+            outerInner = outerInner.Concat(OuterVertices).ToList();
+            for(int i = 0; i < InnerVertices.Length; i++)
             {
-
-                //Generate triangulation from concating outer (n) + inner (n+1) vertices
-                List<Vector3[]> outerInner = new List<Vector3[]>();
-                outerInner.Add(OuterVertices);
-                for(int i = 0; i < InnerVertices.Length; i++)
-                {
-                   outerInner.Add(InnerVertices[i]);
-                }
-
-                CombineInstance[] combine = new CombineInstance[outerInner.Count];
-
-                for (int i = 0; i < outerInner.Count-1; i++)
-                {
-
-                    Vector3[] currentRing = outerInner[i];
-                    List<Vector3> concat = new List<Vector3>();
-                    concat = concat.Concat(currentRing).ToList();
-
-                    if (i < outerInner.Count-1)
-                    {
-                        Vector3[] nextRing = outerInner[i + 1];
-                        //Concat vertices
-                        concat = concat.Concat(nextRing).ToList();
-
-                    }
-
-
-                    Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(concat.ToArray()), MeshUtils.ToVector2(OuterVertices));
-                    combine[i].mesh = triangulator.Mesh;
-
-                }
-
-                Mesh combinedMesh = new Mesh();
-                combinedMesh.CombineMeshes(combine, true, false);
-
-
-                    return combinedMesh;
+                outerInner = outerInner.Concat(InnerVertices[i]).ToList();
             }
-            else
-            {
-                //Generate first triangulation
-                Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(OuterVertices));
-                return triangulator.Mesh;
+
+            //Generate first triangulation
+            Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(outerInner.ToArray()), MeshUtils.ToVector2(OuterVertices));
+            return triangulator.Mesh;
             }
-        }
 
         private Vector2[] SmoothPeak(Vector2[] points, float threshold)
         {
