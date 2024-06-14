@@ -38,13 +38,14 @@ namespace Island
         public bool DebugMode { get; set; } = false;
         public bool Smooth { get; set; } = false;
         public int SmoothThresholdAngle { get; set; } = 110;
+        public Color InnerVertexColor { get; set; } = Color.black;
 
         public Vector3[] OuterVertices { get; private set; } = new Vector3[] { };
         public Vector3[][] InnerVertices { get; private set; } = new Vector3[][] { };
 
         public float[] InnerCircles { get; set; } = new float[] { };
 
-        public Mesh mesh { get; private set; } = new Mesh();
+        public Mesh Mesh { get; private set; } = new Mesh();
 
         public void Spawn()
         {
@@ -69,15 +70,16 @@ namespace Island
             }
 
       
-            mesh = CombineRings();
+            Mesh = CombineRings();
 
             Uv uvs = new Uv();
-            mesh.uv = uvs.Planar(mesh.vertices);
+            Mesh.uv = uvs.Planar(Mesh.vertices);
 
             Normal normals = new Normal();
-            mesh.normals = normals.Set(mesh);
+            Mesh.normals = normals.Set(Mesh);
 
             SetPosition(position);
+            SetInnerVertexColor(InnerVertexColor);
 
             //mesh.normals = Normals(mesh.vertices);
             //mesh.uv = Uvs(mesh.vertices);
@@ -101,7 +103,7 @@ namespace Island
                 outerInner = outerInner.Concat(InnerVertices[i]).ToList();
             }
 
-            //Generate first triangulation
+            //Generate triangulation and add the outervertices as outer edges, so during clean up we keep inner ring triangles (preventing having to merge our different ring layers)
             Triangulator triangulator = new Triangulator(MeshUtils.ToVector2(outerInner.ToArray()), MeshUtils.ToVector2(OuterVertices));
             return triangulator.Mesh;
             }
@@ -163,15 +165,15 @@ namespace Island
 
             Debugger.Polygon(new Polygon()
             {
-                Points = mesh.vertices
+                Points = Mesh.vertices
             });
 
-            for (int i = 0; i < mesh.vertices.Length; i++)
+            for (int i = 0; i < Mesh.vertices.Length; i++)
             {
                 Debugger.Label(new Label()
                 {
                     Text = "" + i,
-                    Position = mesh.vertices[i] + new Vector3(0, 1, 0)
+                    Position = Mesh.vertices[i] + new Vector3(0, 1, 0)
                 });
             }
         }
@@ -257,14 +259,14 @@ namespace Island
         {
 
             //Update Mesh Vertices
-            Vector3[] tempVert = mesh.vertices;
-            for (int i = 0; i < mesh.vertices.Length; i++)
+            Vector3[] tempVert = Mesh.vertices;
+            for (int i = 0; i < Mesh.vertices.Length; i++)
             {
                 tempVert[i] += position;
             }
 
-            mesh.vertices = tempVert;
-            mesh.RecalculateBounds();
+            Mesh.vertices = tempVert;
+            Mesh.RecalculateBounds();
 
             //Update OuterVertices
             for (int i = 0; i < OuterVertices.Length; i++)
@@ -281,6 +283,19 @@ namespace Island
                 }
             }
 
+        }
+
+
+        private void SetInnerVertexColor(Color color)
+        {
+            List<Color> colors = new();
+            
+            for(int i = 0; i < Mesh.vertices.Length;i++)
+            {
+                colors.Add( i < OuterVertices.Length ? Color.white : Color.black);
+            }
+
+            Mesh.colors = colors.ToArray();
         }
     }
 

@@ -50,7 +50,7 @@ namespace Island
             UpdateBounds();
             gameObject.GetComponent<MeshFilter>().mesh = Mesh;
 
-            Mesh ground = ChunkColliders[0].Chunk.Circles.Where(c => c.name == "ground").First().mesh;
+            Mesh ground = ChunkColliders[0].Chunk.Circles.Where(c => c.name == "ground").First().Mesh;
             GenerateVegetation(ground); 
         }
 

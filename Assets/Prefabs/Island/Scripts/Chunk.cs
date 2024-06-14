@@ -79,21 +79,13 @@ namespace Island
                     //Add ground to combine instance
                     if (circle.name == "ground")
                     {
-
-                        Color[] vertexColor = new Color[circle.mesh.vertices.Length];
-                        for (int i = 0; i < circle.mesh.vertices.Length; i++)
-                        {
-                            vertexColor[i] = Color.white;
-                        }
-
-                        circle.mesh.colors = vertexColor;
-                        combine[0].mesh = circle.mesh;
+                        combine[0].mesh = circle.Mesh;
                     }
                     if (circle.name == "root")
                     {
                         //flip normal
                         Normal normal = new Normal();
-                        Mesh flippedMesh = normal.Flip(circle.mesh);
+                        Mesh flippedMesh = normal.Flip(circle.Mesh);
                         //noise up
                         Vector3[] noiseVert = flippedMesh.vertices;
 
