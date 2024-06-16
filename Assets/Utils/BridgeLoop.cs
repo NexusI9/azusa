@@ -285,10 +285,12 @@ namespace Utils
                 //Edgecase (NOT RESOLVED)
                 if (i == 1 && previousPoint.Connections.Count >= 3)
                 {
+
                     /*
                      * The biggest value of half of the length
                      *
                      */
+                   
                     SuperiorPoint maxBelowHalfConnection = previousPoint.Connections[0];
                     foreach(SuperiorPoint sup in previousPoint.Connections)
                     {
@@ -306,15 +308,19 @@ namespace Utils
                         }
                     }
 
-                    //Debug.Log("connect to "+maxBelowHalfConnection.Index);
+                    //Debug.Log("connect to \t"+maxBelowHalfConnection.Index);
 
                     currentPoint.Connections.Insert(0, maxBelowHalfConnection);
+                  
                 }
                 else
                 {
                     currentPoint.Connections.Insert(0, previousPoint.Connections.Last());
                 }
 
+                //Debug.Log($"{i} \t [{string.Join(",", currentPoint.Connections.Select(x => x.Index) )}]");
+
+                //Generate Triangles and Edges
                 for (int c = 0; c < currentPoint.Connections.Count; c++)
                 {
 
@@ -327,17 +333,21 @@ namespace Utils
                         End = currentPoint
                     });
 
-                    //Create Triangle Part A
-                    if(c < currentPoint.Connections.Count - 1)
-                    {
 
+                    //Create Triangle Part A
+                    if (c < currentPoint.Connections.Count - 1)
+                    {
                         Point nextConnection = currentPoint.Connections[c + 1];
                         //Create Triangle
                         Triangles.Add(currentPoint.Index);
                         Triangles.Add(currentConnection.Index);
                         Triangles.Add(nextConnection.Index);
+
+                        if(i == inferiorPoints.Length - 1)
+                        {
+                            //Debug.Log(currentPoint.Index);
+                        }
                     }
-               
 
 
                     if (DebugMode)
@@ -366,9 +376,10 @@ namespace Utils
                 }
 
 
+
                 }
 
-                
+                //Generate upward rectangles
                 Triangles.Add(currentPoint.Index);
                 Triangles.Add(previousPoint.Index);
                 Triangles.Add(currentPoint.Connections.First().Index);
