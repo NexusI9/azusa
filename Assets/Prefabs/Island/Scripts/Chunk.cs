@@ -95,6 +95,7 @@ namespace Island
                         }
 
                         flippedMesh.vertices = noiseVert;
+                        circle.UpdateOuterVertices(flippedMesh.vertices); //Update outerring as well since used in bridgeloop
                         combine[3].mesh = flippedMesh;
                     }
 

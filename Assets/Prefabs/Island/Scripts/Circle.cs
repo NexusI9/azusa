@@ -295,6 +295,11 @@ namespace Island
 
             Mesh.colors = colors.ToArray();
         }
+
+        public void UpdateOuterVertices(Vector3[] vertices)
+        {
+            OuterVertices = vertices;
+        }
     }
 
 
