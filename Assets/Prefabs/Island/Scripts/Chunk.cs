@@ -111,7 +111,7 @@ namespace Island
                     //Bridge Circles together
                     BridgeLoop bridgeLoop = new BridgeLoop(currentCircle.OuterVertices, nextCircle.OuterVertices)
                     {
-                        DebugMode = false
+                        DebugMode = i == 0
                     };
 
                     BridgeLoops.Add(bridgeLoop);
