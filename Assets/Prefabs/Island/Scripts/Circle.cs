@@ -72,11 +72,9 @@ namespace Island
       
             Mesh = CombineRings();
 
-            Uv uvs = new Uv();
-            Mesh.uv = uvs.Planar(Mesh.vertices);
+            Mesh.uv = Uv.Planar(Mesh.vertices);
 
-            Normal normals = new Normal();
-            Mesh.normals = normals.Set(Mesh);
+            Mesh.normals = Normal.Set(Mesh);
 
             SetPosition(position);
             SetInnerVertexColor(InnerVertexColor);

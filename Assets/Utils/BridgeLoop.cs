@@ -379,12 +379,10 @@ namespace Utils
 
 
             //Generate uvs (cylindrical projections
-            Uv uv = new Uv();
-            tempMesh.uv = uv.Cylindrical(tempMesh.vertices);
+            tempMesh.uv = Uv.Cylindrical(tempMesh.vertices);
 
             //Generate normals
-            Normal normal = new Normal();
-            tempMesh.normals = normal.Set(tempMesh);
+            tempMesh.normals = Normal.Set(tempMesh);
 
             tempMesh.RecalculateNormals();
 

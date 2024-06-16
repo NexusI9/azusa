@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Utils
 {
-    public class Normal
+    public static class Normal
     {
-        public Vector3[] Set(Mesh mesh)
+        public static Vector3[] Set(Mesh mesh)
         {
 
             Vector3[] vertices = mesh.vertices;
@@ -46,7 +46,7 @@ namespace Utils
             return mesh.normals;
         }
 
-        public Mesh Flip(Mesh mesh)
+        public static Mesh Flip(Mesh mesh)
         {
             //flip normals
             Vector3[] normals = mesh.normals;
@@ -78,7 +78,7 @@ namespace Utils
 
         }
 
-        public Vector3[] Smooth(Mesh mesh)
+        public static Vector3[] Smooth(Mesh mesh)
         {
 
 

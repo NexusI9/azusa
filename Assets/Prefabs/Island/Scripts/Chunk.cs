@@ -84,8 +84,7 @@ namespace Island
                     if (circle.name == "root")
                     {
                         //flip normal
-                        Normal normal = new Normal();
-                        Mesh flippedMesh = normal.Flip(circle.Mesh);
+                        Mesh flippedMesh = Normal.Flip(circle.Mesh);
                         //noise up
                         Vector3[] noiseVert = flippedMesh.vertices;
 

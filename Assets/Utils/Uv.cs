@@ -7,10 +7,10 @@ namespace Utils
 {
 
 
-    public class Uv
+    public static class Uv
     {
 
-        public Vector2[] Planar(Vector3[] vertices)
+        public static Vector2[] Planar(Vector3[] vertices)
         {
 
             //Planar projection
@@ -40,7 +40,7 @@ namespace Utils
             return uvs;
         }
 
-        public Vector2[] Cylindrical(Vector3[] vertices)
+        public static Vector2[] Cylindrical(Vector3[] vertices)
         {
 
             Vector2[] uvs = new Vector2[vertices.Length];
